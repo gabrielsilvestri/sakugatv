@@ -1,6 +1,7 @@
 import { getPreferenceValues, showHUD, showToast, Toast } from "@raycast/api";
 import { spawn } from "child_process";
 import { existsSync, readFileSync } from "fs";
+import { homedir } from "os";
 import { join } from "path";
 
 // The app writes its own path to %LOCALAPPDATA%\SakugaTV\app-path.txt every time it starts,
@@ -8,7 +9,9 @@ import { join } from "path";
 function appPath(): string | undefined {
   const { appPath } = getPreferenceValues<Preferences.Abrir>();
   if (appPath && existsSync(appPath)) return appPath;
-  const saved = join(process.env.LOCALAPPDATA || "", "SakugaTV", "app-path.txt");
+  // Raycast may not pass LOCALAPPDATA to extensions, so build it from the home folder too
+  const local = process.env.LOCALAPPDATA || join(homedir(), "AppData", "Local");
+  const saved = join(local, "SakugaTV", "app-path.txt");
   if (existsSync(saved)) {
     const p = readFileSync(saved, "utf8").trim();
     if (existsSync(p)) return p;
