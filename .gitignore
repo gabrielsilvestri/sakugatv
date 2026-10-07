@@ -1,0 +1,12 @@
+node_modules/
+data/
+raycast/dist/
+raycast/raycast-env.d.ts
+app/target/
+
+# machine-only files
+CLAUDE.md
+ux-critic/
+presets.local.mjs
+preset-stats.local.json
+public/animadores.local.json

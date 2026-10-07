@@ -1,0 +1,55 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "sakugatv",
+  "title": "SakugaTV",
+  "description": "Opens the SakugaTV app, which starts its local server when needed.",
+  "icon": "icon.png",
+  "author": "gabriel_s",
+  "categories": [
+    "Media"
+  ],
+  "license": "MIT",
+  "platforms": [
+    "Windows"
+  ],
+  "commands": [
+    {
+      "name": "abrir",
+      "title": "SakugaTV",
+      "subtitle": "Sakugabooru",
+      "description": "Open the sakuga playlist app.",
+      "mode": "no-view",
+      "keywords": [
+        "sakuga",
+        "anime",
+        "animation",
+        "sakugabooru"
+      ],
+      "preferences": [
+        {
+          "name": "appPath",
+          "title": "App path",
+          "description": "Path to sakugatv.exe. Optional: the app records its own path the first time it runs.",
+          "type": "textfield",
+          "required": false
+        }
+      ]
+    }
+  ],
+  "scripts": {
+    "build": "ray build",
+    "dev": "ray develop",
+    "lint": "ray lint"
+  },
+  "dependencies": {
+    "@raycast/api": "2.5.2"
+  },
+  "devDependencies": {
+    "@raycast/eslint-config": "^2.0.4",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "eslint": "^9.22.0",
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.2"
+  }
+}

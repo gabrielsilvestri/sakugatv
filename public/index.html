@@ -1,0 +1,1469 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SakugaTV</title>
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anybody:wdth,wght@50..150,500..900&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&family=Dela+Gothic+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* sumi (ink), washi (paper) and traditional Japanese colors (nippon no dentou shoku) */
+    --ink: #0E0D12;
+    --panel: #16141B;
+    --raise: #1F1C25;
+    --line: #2E2934;
+    --text: #F3EEE6;
+    --muted: #ABA2A8;
+    --shu: #F0503A;             /* 朱 shu: torii-gate red, the brand color */
+    --shu-dim: #F0503A2E;
+    --yamabuki: #F8B500;        /* 山吹 */
+    --wakatake: #68BE8D;        /* 若竹 */
+    --ayame: #A88BE8;           /* 菖蒲 */
+    --asagi: #2FB8C4;           /* 浅葱 */
+    --sakura: #F5A3B8;          /* 桜 */
+    --beni: #E83E6C;            /* 紅 */
+    --sora: #6CB4EE;            /* 空 */
+    --wakakusa: #C3D825;        /* 若草 */
+    --daidai: #F39800;          /* 橙 */
+    --nezumi: #A3A3A8;          /* 鼠 */
+    --jp: 'Dela Gothic One', var(--display);
+    --jp-ui: 'Yu Gothic UI', 'Yu Gothic', 'Meiryo', 'Hiragino Sans', sans-serif;   /* legible small kanji */
+    --display: 'Anybody', system-ui, sans-serif;
+    --body: 'Geist', system-ui, sans-serif;
+    --mono: 'Geist Mono', ui-monospace, monospace;
+    --bar: 2.75rem;
+    --ease: cubic-bezier(.2, .8, .2, 1);
+  }
+  * { box-sizing: border-box; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: var(--ink); color: var(--text); overflow: hidden;
+    font: 400 0.9375rem/1.5 var(--body); -webkit-font-smoothing: antialiased;
+  }
+  button, input, select { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--shu); outline-offset: 2px; border-radius: 6px; }
+  [hidden] { display: none !important; }
+
+  /* ---------- top bar ---------- */
+  .bar {
+    height: var(--bar); display: flex; align-items: center; gap: 1rem;
+    padding-left: 0.875rem; border-bottom: 1px solid var(--line); background: var(--ink); user-select: none;
+  }
+  .brand { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; margin: 0 0.5rem 0 0; font-size: inherit; }
+  .brand svg { width: 1.375rem; height: 1.375rem; display: block; }
+  .wordmark { font: 800 1.0625rem/1 var(--display); color: var(--text); font-stretch: 135%; letter-spacing: -0.03em; }
+  .wordmark b {
+    display: inline-block; font: 700 0.625rem/1 var(--jp-ui); letter-spacing: 0.04em; color: #fff; background: #C8321F;
+    border-radius: 3px; padding: 0.22rem 0.28rem 0.18rem; margin-left: 0.35rem; vertical-align: 0.12rem; transform: rotate(-4deg);
+    box-shadow: inset 0 0 0 1.5px #ffffff40;
+  }
+  .drag { flex: 1; align-self: stretch; display: flex; align-items: stretch; justify-content: flex-start; min-width: 0; }
+  .finder {
+    display: flex; align-items: center; gap: 0.6rem; width: min(30rem, 100%); align-self: stretch;
+    background: none; border: 0; border-left: 1px solid var(--line); border-right: 1px solid var(--line); border-radius: 0;
+    padding: 0 0.875rem; color: var(--muted); font-size: 0.8125rem; text-align: left; transition: background .15s, color .15s;
+  }
+  .finder:hover { background: var(--panel); color: var(--text); }
+  .finder:hover svg { color: var(--shu); }
+  .finder svg { width: 0.875rem; height: 0.875rem; flex-shrink: 0; }
+  .finder span { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .finder kbd { font: 500 0.6875rem var(--mono); border: 1px solid var(--line); border-radius: 4px; padding: 0.05rem 0.35rem; }
+  .winbtns { display: flex; align-self: stretch; }
+  .langbtn { align-self: stretch; margin-left: auto; display: flex; align-items: center; gap: 0.35rem; padding: 0 0.875rem; background: none; border: 0; border-left: 1px solid var(--line); font: 600 0.75rem var(--mono); color: var(--muted); }
+  .langbtn span { padding: 0.15rem 0.3rem; border-radius: 4px; }
+  .langbtn span.on { color: var(--ink); background: var(--text); }
+  .langbtn:hover { color: var(--text); }
+  .winbtn { width: 2.875rem; background: none; border: 0; color: var(--muted); display: grid; place-items: center; }
+  .winbtn svg { width: 0.75rem; height: 0.75rem; }
+  .winbtn:hover { background: var(--raise); color: var(--text); }
+  .winbtn.close:hover { background: #C42B1C; color: #fff; }
+  .winbtn[aria-pressed="true"] { color: var(--shu); }
+  body:not(.app-mode) .app-only { display: none !important; }
+
+  /* ---------- layout ---------- */
+  .main { height: calc(100vh - var(--bar)); display: grid; grid-template-columns: minmax(0, 1fr) 25rem; }
+  .stage { display: flex; flex-direction: column; min-width: 0; min-height: 0; padding: 1rem 1.25rem; gap: 0.75rem; position: relative; }
+  .screen { position: relative; flex: 1; min-height: 0; background: #000; border-radius: 12px; overflow: hidden; }
+  .screen video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #000; }
+  .overlay { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 2rem; color: var(--muted); }
+  .overlay .kanji { font: 400 7rem/1 var(--jp); color: transparent; -webkit-text-stroke: 1.5px var(--shu); opacity: .5; margin-bottom: 1rem; }
+  .overlay p { max-width: 42ch; margin: 0 auto; text-wrap: pretty; }
+  .sound-btn { position: absolute; top: 0.875rem; right: 0.875rem; background: #000000b3; border: 1px solid var(--line); border-radius: 999px; padding: 0.4rem 0.9rem; font-size: 0.8125rem; z-index: 2; }
+
+  .hud { display: flex; flex-direction: column; gap: 0.625rem; }
+  /* timesheet: every tick is one frame (koma) at 24 fps */
+  .sheet { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 1rem; }
+  .sheet canvas { width: 100%; height: 32px; display: block; cursor: pointer; }
+  .koma { font: 500 0.75rem/1 var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .koma b { color: var(--text); font-weight: 600; }
+
+  .transport { display: grid; grid-template-columns: minmax(0, 1.5fr) auto minmax(0, 1fr); align-items: center; gap: 1rem; }
+  .tuner { display: flex; align-items: center; gap: 0.375rem; min-width: 0; }
+  .chbtns { display: flex; flex-direction: column; gap: 2px; }
+  .chbtns button { width: 1.75rem; height: 1.5rem; background: var(--panel); border: 1px solid var(--line); border-radius: 5px; display: grid; place-items: center; color: var(--muted); }
+  .chbtns button:hover { color: var(--text); border-color: var(--muted); }
+  .chbtns svg { width: 0.7rem; height: 0.7rem; }
+  .chpill {
+    display: flex; align-items: center; gap: 0.6rem; min-width: 0; height: 3.125rem; padding: 0 0.875rem 0 0.75rem;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px; text-align: left;
+  }
+  .chpill:hover { border-color: var(--muted); }
+  .chpill .num { font: 600 0.75rem var(--mono); color: var(--c, var(--shu)); flex-shrink: 0; }
+  .chpill { box-shadow: inset 3px 0 0 var(--c, var(--shu)); }
+  .chpill .chname { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .chpill svg { width: 0.8rem; height: 0.8rem; color: var(--muted); flex-shrink: 0; }
+  .order {
+    display: flex; align-items: center; gap: 0.4rem; height: 3.125rem; padding: 0 0.75rem; flex-shrink: 0; order: 3;
+    background: none; border: 1px solid var(--line); border-radius: 10px; color: var(--muted); font-size: 0.8125rem; font-weight: 600;
+  }
+  .order:hover { color: var(--text); border-color: var(--muted); }
+  .order svg { width: 1rem; height: 1rem; }
+  .order.rank { color: var(--yamabuki); border-color: var(--yamabuki); background: color-mix(in srgb, var(--yamabuki) 14%, transparent); }
+  body.mini .order { background: #00000080; }
+  .center { display: flex; gap: 0.5rem; align-items: center; }
+  .right { display: flex; gap: 0.375rem; justify-content: flex-end; }
+  .ctl {
+    display: inline-grid; place-items: center; width: 2.5rem; height: 2.5rem; flex-shrink: 0;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px; color: var(--text);
+    transition: border-color .15s, background .15s;
+  }
+  .ctl:hover { border-color: var(--muted); }
+  .ctl svg { width: 1.0625rem; height: 1.0625rem; }
+  .ctl.big { width: 3.25rem; height: 3.25rem; border-radius: 50%; background: var(--text); color: var(--ink); border-color: var(--text); }
+  .ctl.big:hover { background: #fff; }
+  .ctl.big svg { width: 1.25rem; height: 1.25rem; }
+  .ctl[aria-pressed="true"] { background: var(--shu-dim); border-color: var(--shu); color: var(--shu); }
+  .ctl.fav[aria-pressed="true"] svg path { fill: currentColor; }
+
+  /* ---------- right panel ---------- */
+  .side { background: var(--panel); border-left: 1px solid var(--line); display: flex; flex-direction: column; min-height: 0; }
+  .tabs { display: flex; gap: 0.25rem; padding: 0.625rem 0.75rem 0; border-bottom: 1px solid var(--line); flex-shrink: 0; }
+  .tabs button { background: none; border: 0; padding: 0.55rem 0.75rem 0.7rem; color: var(--muted); font-weight: 600; font-size: 0.875rem; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+  .tabs button:hover { color: var(--text); }
+  .tabs button[aria-selected="true"] { color: var(--text); border-bottom-color: var(--shu); }
+  .tabs .count { font: 500 0.75rem var(--mono); color: var(--muted); margin-left: 0.3rem; }
+  .pane { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+
+  .now { padding: 1.125rem 1.25rem 1.5rem; display: grid; gap: 1.25rem; align-content: start; }
+  .eyebrow { margin: 0 0 0.375rem; font: 500 0.6875rem/1.4 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--c, var(--shu)); }
+  .anime { margin: 0; font: 800 1.625rem/1.08 var(--display); font-stretch: 112%; letter-spacing: -0.02em; text-wrap: balance; }
+  .credits { margin: 0.5rem 0 0; color: var(--muted); font-size: 0.875rem; text-wrap: pretty; }
+  .credits a { color: var(--text); text-decoration: none; border-bottom: 1px solid var(--line); }
+  .credits a:hover { border-color: var(--shu); }
+  .section-h { margin: 0 0 0.625rem; font: 600 0.6875rem/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+
+  .profs { display: grid; gap: 0.5rem; }
+  .prof { border: 1px solid var(--line); border-radius: 12px; background: var(--ink); overflow: hidden; }
+  .prof summary { list-style: none; cursor: pointer; display: flex; gap: 0.75rem; align-items: center; padding: 0.75rem 0.875rem; }
+  .prof summary::-webkit-details-marker { display: none; }
+  .prof .avatar {
+    width: 2.5rem; height: 2.5rem; border-radius: 50%; flex-shrink: 0; display: grid; place-items: center;
+    background: color-mix(in srgb, var(--asagi) 18%, transparent); color: var(--asagi); font: 800 0.875rem var(--display); font-stretch: 120%;
+  }
+  .prof .who { flex: 1; min-width: 0; }
+  .prof h3 { margin: 0; font-size: 0.9375rem; font-weight: 650; display: flex; gap: 0.4rem; align-items: center; }
+  .prof .sub { margin: 0.1rem 0 0; font: 0.75rem/1.4 var(--mono); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .prof .chev { width: 0.9rem; height: 0.9rem; color: var(--muted); transition: transform .2s var(--ease); flex-shrink: 0; }
+  .prof[open] .chev { transform: rotate(180deg); }
+  .prof .body { padding: 0 0.875rem 0.875rem; display: grid; gap: 0.75rem; font-size: 0.875rem; }
+  .prof .body p { margin: 0; max-width: 60ch; text-wrap: pretty; }
+  .prof .roles { color: var(--muted); font-size: 0.8125rem; }
+  .works { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.3rem; }
+  .works li { display: grid; grid-template-columns: 2.75rem 1fr; gap: 0.5rem; font-size: 0.8125rem; }
+  .works .y { font: 0.75rem/1.6 var(--mono); color: var(--muted); }
+  .works em { font-style: normal; color: var(--muted); }
+  .trivia { border-left: 2px solid var(--asagi); padding-left: 0.625rem; color: var(--muted); }
+  .prof .go { justify-self: start; }
+
+  .taglist { margin: 0; display: grid; gap: 0.75rem; }
+  .taglist dt { font: 600 0.6875rem/1 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem; }
+  .taglist dd { margin: 0; display: flex; flex-wrap: wrap; gap: 0.3rem; }
+  .tagpair { display: inline-flex; max-width: 100%; }
+  .tag {
+    border: 1px solid var(--line); border-right: 0; background: var(--ink); border-radius: 999px 0 0 999px; padding: 0.22rem 0.55rem 0.22rem 0.65rem;
+    font-size: 0.8125rem; max-width: 100%; text-align: left;
+  }
+  .tag { color: var(--k, var(--text)); }
+  .tag:hover, .tag:focus-visible { border-color: var(--k, var(--shu)); background: color-mix(in srgb, var(--k, var(--shu)) 14%, var(--ink)); }
+  .taglist dt { color: var(--k, var(--muted)); }
+  .hide { border: 1px solid var(--line); background: var(--ink); color: var(--muted); border-radius: 0 999px 999px 0; padding: 0 0.5rem 0 0.4rem; display: grid; place-items: center; }
+  .hide svg { width: 0.85rem; height: 0.85rem; }
+  .hide:hover, .hide:focus-visible { color: var(--text); border-color: var(--muted); background: var(--raise); }
+  .meta { margin: 0; font: 0.75rem/1.6 var(--mono); color: var(--muted); }
+
+  .queue { list-style: none; margin: 0; padding: 0.625rem; }
+  .queue li button { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); gap: 0.75rem; align-items: center; width: 100%; background: none; border: 0; padding: 0.375rem; border-radius: 10px; text-align: left; }
+  .queue li button:hover { background: var(--raise); }
+  .queue img { width: 6.5rem; aspect-ratio: 16/9; object-fit: cover; border-radius: 6px; background: var(--ink); display: block; }
+  .queue .q1 { display: block; font-size: 0.875rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .queue .q2 { display: block; font-size: 0.75rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .btn { border-radius: 8px; padding: 0.5rem 0.875rem; border: 1px solid var(--line); background: var(--raise); font-size: 0.875rem; white-space: nowrap; }
+  .btn:hover { border-color: var(--muted); }
+  .btn.primary { background: var(--shu); border-color: var(--shu); color: var(--ink); font-weight: 650; }
+  .btn.primary:hover { background: #FF6A54; }
+  .btn.ghost { background: none; }
+  .badge { flex-shrink: 0; font: 600 0.5625rem/1 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; padding: 0.2rem 0.35rem; border-radius: 4px; border: 1px solid currentColor; color: var(--muted); }
+  .badge.extra { color: #fff; background: #C2244F; border-color: #C2244F; font-size: 0.625rem; }
+
+  /* ---------- channel guide ---------- */
+  .guide {
+    position: fixed; inset: var(--bar) 0 0 0; z-index: 20; background: #0E0D12f7; backdrop-filter: blur(14px);
+    display: grid; grid-template-columns: 15rem minmax(0, 1fr);
+    animation: guideIn .22s var(--ease);
+  }
+  @keyframes guideIn { from { opacity: 0; transform: translateY(-6px); } }
+  .cats { border-right: 1px solid var(--line); padding: 1.25rem 0.75rem; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; }
+  .cats h2 { margin: 0 0.625rem 0.875rem; font: 800 1.25rem/1 var(--display); font-stretch: 125%; letter-spacing: -0.02em; display: flex; align-items: baseline; gap: 0.5rem; }
+  .cats h2 small { font: 700 0.75rem var(--jp-ui); color: var(--shu); letter-spacing: 0.05em; }
+  .cat { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; background: none; border: 0; border-radius: 8px; padding: 0.5rem 0.625rem; text-align: left; color: var(--muted); font-weight: 500; }
+  .cat:hover { background: var(--raise); color: var(--text); }
+  .cat .nm { display: flex; align-items: center; gap: 0.55rem; }
+  .cat .dot { width: 0.5rem; height: 0.5rem; border-radius: 2px; background: var(--c); flex-shrink: 0; transform: rotate(45deg); }
+  .cat .kj { font: 600 0.6875rem var(--jp-ui); color: var(--c); opacity: .9; letter-spacing: 0.04em; }
+  .cat[aria-current="true"] { background: color-mix(in srgb, var(--c) 12%, var(--raise)); color: var(--text); box-shadow: inset 2px 0 0 var(--c); }
+  .cat .n { font: 0.75rem var(--mono); color: var(--muted); }
+  .cats hr { border: 0; border-top: 1px solid var(--line); margin: 0.5rem 0.625rem; }
+  .gmain { overflow-y: auto; overscroll-behavior: contain; padding: 0 1.75rem 3rem; }
+  .gsearch { position: sticky; top: 0; z-index: 2; margin: 0 -1.75rem 1rem; padding: 1.25rem 1.75rem 1rem; background: linear-gradient(#0E0D12 78%, #0E0D1200); display: flex; gap: 0.75rem; }
+  .gsearch label { flex: 1; display: flex; align-items: center; gap: 0.6rem; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 0 0.875rem; }
+  .gsearch label:focus-within { border-color: var(--shu); }
+  .gsearch svg { width: 1rem; height: 1rem; color: var(--muted); flex-shrink: 0; }
+  .gsearch input { flex: 1; min-width: 0; background: none; border: 0; outline: none; padding: 0.7rem 0; font-size: 1rem; }
+  .gsearch input::placeholder { color: var(--muted); }
+  .ghead { display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin-bottom: 1.125rem; flex-wrap: wrap; }
+  .ghead { position: relative; }
+  .ghead h3 { margin: 0 0 0 0.25rem; font: 800 2rem/1 var(--display); font-stretch: 120%; letter-spacing: -0.025em; position: relative; }
+  .ghead h3 .kjt { font: 400 1.25rem/1 var(--jp); color: var(--c, var(--shu)); margin-left: 0.75rem; vertical-align: 0.3rem; letter-spacing: 0.06em; }
+  .ghead > div { position: relative; z-index: 1; }
+  .ghead h3 .bar-c { display: inline-block; width: 0.55rem; height: 1.6rem; background: var(--c, var(--shu)); margin-right: 0.6rem; vertical-align: -0.12rem; border-radius: 2px; }
+  .ghead p { margin: 0.45rem 0 0; color: var(--muted); font-size: 0.875rem; max-width: 60ch; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(13.5rem, 1fr)); gap: 0.875rem; }
+  .tile { position: relative; border-radius: 12px; overflow: hidden; background: var(--panel); border: 1px solid var(--line); transition: border-color .15s, transform .2s var(--ease); }
+  .tile { border-top: 3px solid var(--c, var(--line)); }
+  .tile:hover { border-color: var(--c, var(--muted)); transform: translateY(-2px); }
+  .tile.on { border-color: var(--c, var(--shu)); box-shadow: 0 0 0 1px var(--c, var(--shu)), 0 8px 24px -10px var(--c, var(--shu)); }
+  .tile > button.pick { display: block; width: 100%; background: none; border: 0; padding: 0; text-align: left; }
+  .thumb { aspect-ratio: 16/9; background: var(--raise) center/cover no-repeat; position: relative; }
+  .thumb::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, #0E0D12d9, #0E0D1200 55%); }
+  .thumb .ch { position: absolute; top: 0.5rem; left: 0.55rem; z-index: 1; font: 600 0.6875rem var(--mono); background: var(--ink); border-radius: 4px; padding: 0.15rem 0.35rem; color: var(--c, var(--shu)); }
+  .thumb .pc { position: absolute; bottom: 0.5rem; right: 0.55rem; z-index: 1; font: 500 0.6875rem var(--mono); background: #0E0D12d9; border-radius: 4px; padding: 0.15rem 0.35rem; color: var(--text); }
+  .thumb .glyph { position: absolute; inset: 0; display: grid; place-items: center; color: var(--c, var(--shu)); z-index: 1; }
+  .thumb .glyph svg { width: 2.25rem; height: 2.25rem; }
+  .tinfo { padding: 0.625rem 0.75rem 0.75rem; }
+  .tname { display: flex; align-items: center; gap: 0.4rem; font-weight: 650; }
+  .tname span:first-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tsub { display: block; margin-top: 0.15rem; font-size: 0.75rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tile .edit { position: absolute; top: 0.4rem; right: 0.4rem; z-index: 2; width: 1.875rem; height: 1.875rem; border-radius: 7px; border: 0; background: #0E0D12d9; color: var(--text); display: grid; place-items: center; opacity: 0; }
+  .tile:hover .edit, .tile .edit:focus-visible { opacity: 1; }
+  .tile .edit svg { width: 0.85rem; height: 0.85rem; }
+  .tile.add { border-style: dashed; background: none; }
+  .tile.add .thumb { background: none; }
+  .tile.add .thumb::after { display: none; }
+  .rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.25rem; max-width: 44rem; }
+  .rows li { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 0.55rem 0.75rem; border-radius: 8px; background: var(--panel); }
+  .rows li > span, .rows .rowpick span { font: 0.8125rem var(--mono); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rows .rowpick { flex: 1; text-align: left; background: none; border: 0; padding: 0; min-width: 0; display: flex; }
+  .rows .rowpick:hover { color: var(--shu); }
+  .rows small { color: var(--muted); font: 0.75rem var(--mono); white-space: nowrap; }
+  .gsec { margin: 2rem 0 0.875rem; font: 600 0.6875rem/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  .empty { color: var(--muted); max-width: 46ch; }
+
+  /* ---------- channel editor ---------- */
+  dialog.editor {
+    border: 1px solid var(--line); border-radius: 14px; background: var(--panel); color: var(--text);
+    width: min(30rem, calc(100vw - 2rem)); padding: 1.25rem;
+  }
+  dialog.editor::backdrop { background: #000000a6; }
+  .editor h2 { margin: 0 0 1rem; font: 800 1.375rem/1 var(--display); font-stretch: 120%; }
+  .editor form { display: grid; gap: 0.875rem; }
+  .editor label { display: grid; gap: 0.35rem; font-size: 0.8125rem; color: var(--muted); }
+  .editor input, .editor select { background: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 0.55rem 0.7rem; width: 100%; color: var(--text); }
+  .tagbox { position: relative; }
+  .suggest { position: absolute; z-index: 5; left: 0; right: 0; top: calc(100% + 4px); margin: 0; padding: 0.25rem; list-style: none; background: var(--ink); border: 1px solid var(--line); border-radius: 8px; max-height: 15rem; overflow: auto; }
+  .suggest li { display: flex; justify-content: space-between; gap: 0.5rem; padding: 0.4rem 0.5rem; border-radius: 5px; cursor: pointer; font-size: 0.8125rem; color: var(--text); }
+  .suggest li[aria-selected="true"], .suggest li:hover { background: var(--raise); }
+  .suggest .kind { color: var(--muted); font: 0.6875rem/1.6 var(--mono); }
+  .chips { display: flex; flex-wrap: wrap; gap: 0.375rem; }
+  .chip { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.25rem 0.375rem 0.25rem 0.55rem; border-radius: 999px; border: 1px solid var(--line); background: var(--ink); font: 0.75rem/1.3 var(--mono); }
+  .chip.out { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--shu); }
+  .chip button { background: none; border: 0; padding: 0 0.15rem; color: inherit; line-height: 1; }
+  .hint { margin: 0; font-size: 0.75rem; color: var(--muted); max-width: 46ch; }
+  .row { display: flex; gap: 0.5rem; }
+  .row .danger { margin-left: auto; }
+
+  .toast { position: fixed; left: 50%; bottom: 1.5rem; transform: translate(-50%, 8px); z-index: 40; background: var(--raise); border: 1px solid var(--line); border-radius: 10px; padding: 0.6rem 0.95rem; font-size: 0.875rem; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s var(--ease); }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+  .toast .undo { background: none; border: 0; color: var(--shu); font-weight: 600; margin-left: 0.6rem; padding: 0; }
+
+  /* ---------- player-only mode ---------- */
+  .mini-top { display: none; }
+  body.mini .bar, body.mini .side { display: none; }
+  body.mini .main { height: 100vh; grid-template-columns: minmax(0, 1fr); }
+  body.mini .stage { padding: 0; gap: 0; }
+  body.mini .screen { position: absolute; inset: 0; border-radius: 0; }
+  body.mini .hud {
+    position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; padding: 4.5rem 1.25rem 1rem;
+    background: linear-gradient(to bottom, transparent, #000000d9 55%);
+    opacity: 0; transition: opacity .25s; pointer-events: none;
+  }
+  body.mini .hud .ctl:not(.big), body.mini .chpill, body.mini .chbtns button { background: #00000080; }
+  body.mini .mini-top {
+    display: flex; position: absolute; top: 0; left: 0; right: 0; z-index: 3; justify-content: space-between; align-items: start;
+    padding: 0.75rem; background: linear-gradient(#000000b3, transparent); opacity: 0; transition: opacity .25s; pointer-events: none;
+  }
+  .mini-top .nowtxt { font: 600 0.8125rem var(--mono); color: var(--text); padding: 0.4rem 0.6rem; }
+  .mini-top .nowtxt b { color: var(--shu); font-weight: 600; margin-right: 0.5rem; }
+  .mini-top .grp { display: flex; background: #000000a6; border-radius: 8px; overflow: hidden; }
+  .mini-top .winbtn { height: 2.25rem; color: var(--text); }
+  body.mini.hud-on .hud, body.mini.hud-on .mini-top { opacity: 1; pointer-events: auto; }
+  body.mini:not(.hud-on) .screen { cursor: none; }
+  body.mini .sound-btn { top: 3.5rem; }
+
+  @media (max-width: 900px) {
+    body { overflow: auto; }
+    .main { grid-template-columns: minmax(0, 1fr); height: auto; }
+    .stage { padding: 0.75rem; }
+    .screen { flex: none; aspect-ratio: 16/9; }
+    .side { border-left: 0; border-top: 1px solid var(--line); }
+    .pane { overflow: visible; }
+    .transport { grid-template-columns: minmax(0, 1fr); }
+    .transport .center, .transport .right { justify-content: center; }
+    .chpill { flex: 1; }
+    .finder kbd, .wordmark { display: none; }
+    .guide { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 1fr; }
+    .cats { flex-direction: row; overflow-x: auto; border-right: 0; border-bottom: 1px solid var(--line); padding: 0.625rem; }
+    .cats h2, .cats hr { display: none; }
+    .cat { flex-shrink: 0; }
+    .gmain { padding: 0 1rem 3rem; }
+    .gsearch { margin: 0 -1rem 1rem; padding: 1rem; flex-wrap: wrap; }
+    .gsearch label { flex-basis: 100%; }
+    .grid { grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr)); }
+    .ghead h3 { font-size: 1.5rem; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- logo: the bouncing ball, every animator's first exercise, with squash and stretch and timing dots along the arc -->
+    <symbol id="logo" viewBox="2 3 28 25">
+      <path d="M6.5 7.5C10 7.5 14.5 12 17.5 22.5C19.5 16.5 22 14.5 25.5 14" fill="none" stroke="#F0503A" stroke-opacity=".6" stroke-width=".85" stroke-dasharray="0.01 1.55" stroke-linecap="round"/>
+  <line x1="5" y1="25.6" x2="27" y2="25.6" stroke="#F3EEE6" stroke-opacity=".35" stroke-width="1.2" stroke-linecap="round"/>
+  <circle cx="6.5" cy="7.5" r="2.6" fill="#F0503A" fill-opacity=".22"/>
+  <ellipse cx="12.6" cy="13.4" rx="2.3" ry="3.3" transform="rotate(-28 12.6 13.4)" fill="#F0503A" fill-opacity=".5"/>
+  <ellipse cx="17.6" cy="23.1" rx="4.5" ry="2.5" fill="#F0503A"/>
+  <ellipse cx="25.3" cy="13.8" rx="2.3" ry="3.1" transform="rotate(24 25.3 13.8)" fill="#F0503A" fill-opacity=".5"/>
+    </symbol>
+  </defs>
+</svg>
+
+<header class="bar" id="bar">
+  <h1 class="brand" aria-label="SakugaTV"><svg aria-hidden="true"><use href="#logo"/></svg><span class="wordmark">sakuga<b title="TV">テレビ</b></span></h1>
+  <div class="drag" id="drag">
+    <button class="finder" id="openGuide" data-i18n-title="guideG">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <span data-i18n="finder"></span><kbd>G</kbd>
+    </button>
+  </div>
+  <button class="langbtn" id="langBtn" title="Português / English"><span data-l="pt">PT</span><span data-l="en">EN</span></button>
+  <div class="winbtns app-only">
+    <button class="winbtn pin" data-i18n-title="pin" data-i18n-aria="pin" aria-pressed="false"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"><path d="M4.5 1.5h3l-.5 3 2 2h-6l2-2zM6 6.5v4"/></svg></button>
+    <button class="winbtn" data-win="min" data-i18n-title="min" data-i18n-aria="min"><svg viewBox="0 0 12 12"><path d="M1 6h10" stroke="currentColor" stroke-width="1.2"/></svg></button>
+    <button class="winbtn" data-win="max" data-i18n-title="max" data-i18n-aria="max"><svg viewBox="0 0 12 12"><rect x="1.5" y="1.5" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.2"/></svg></button>
+    <button class="winbtn close" data-win="close" data-i18n-title="close" data-i18n-aria="close"><svg viewBox="0 0 12 12"><path d="M1.5 1.5l9 9M10.5 1.5l-9 9" stroke="currentColor" stroke-width="1.2"/></svg></button>
+  </div>
+</header>
+
+<div class="main">
+  <main class="stage">
+    <div class="screen" id="screen">
+      <video id="vA" playsinline preload="auto"></video>
+      <video id="vB" playsinline preload="auto" hidden></video>
+      <div class="overlay" id="overlay"><div><div class="kanji" aria-hidden="true">作画</div><p id="overlayText" data-i18n="tuning"></p></div></div>
+      <button class="sound-btn" id="soundBtn" hidden data-i18n="sound"></button>
+      <div class="mini-top" id="miniTop">
+        <span class="nowtxt" id="miniNow"></span>
+        <div class="grp">
+          <button class="winbtn" id="miniExit" data-i18n-title="miniExit" data-i18n-aria="miniExit"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M4.5 1.5h-3v3M7.5 10.5h3v-3M1.5 1.5l3.5 3.5M10.5 10.5 7 7"/></svg></button>
+          <button class="winbtn pin app-only" data-i18n-title="pin" data-i18n-aria="pin" aria-pressed="false"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"><path d="M4.5 1.5h3l-.5 3 2 2h-6l2-2zM6 6.5v4"/></svg></button>
+          <button class="winbtn app-only" data-win="min" data-i18n-title="min" data-i18n-aria="min"><svg viewBox="0 0 12 12"><path d="M1 6h10" stroke="currentColor" stroke-width="1.2"/></svg></button>
+          <button class="winbtn close app-only" data-win="close" data-i18n-title="close" data-i18n-aria="close"><svg viewBox="0 0 12 12"><path d="M1.5 1.5l9 9M10.5 1.5l-9 9" stroke="currentColor" stroke-width="1.2"/></svg></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="hud" id="hud">
+      <div class="sheet">
+        <canvas id="sheet" data-i18n-aria="sheet" role="slider" tabindex="0"></canvas>
+        <span class="koma" id="koma"></span>
+      </div>
+      <div class="transport">
+        <div class="tuner">
+          <div class="chbtns">
+            <button id="chUp" data-i18n-title="chUp" data-i18n-aria="chUp"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m3 7.5 3-3 3 3"/></svg></button>
+            <button id="chDown" data-i18n-title="chDown" data-i18n-aria="chDown"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m3 4.5 3 3 3-3"/></svg></button>
+          </div>
+          <button class="order" id="orderBtn" data-i18n-aria="orderA"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path id="orderIcon" d=""/></svg><span id="orderTxt"></span></button>
+          <button class="chpill" id="chPill" data-i18n-title="chPill"><span class="num" id="chNum">CH 000</span><span class="chname" id="chName"></span><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 3.5h8M2 6h8M2 8.5h5"/></svg></button>
+        </div>
+        <div class="center">
+          <button class="ctl" id="prevBtn" data-i18n-title="prev" data-i18n-aria="prev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 5 9 12l10 7V5ZM5 5v14"/></svg></button>
+          <button class="ctl big" id="playBtn"><svg viewBox="0 0 24 24" fill="currentColor"><path id="playIcon" d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg></button>
+          <button class="ctl" id="nextBtn" data-i18n-title="next" data-i18n-aria="next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 5 10 7-10 7V5ZM19 5v14"/></svg></button>
+        </div>
+        <div class="right">
+          <button class="ctl fav" id="favBtn" data-i18n-title="fav" data-i18n-aria="fav" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="m12 3 2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 16.8l-5.4 2.9 1.1-6.1-4.5-4.2 6.1-.8L12 3Z"/></svg></button>
+          <button class="ctl" id="zapBtn" data-i18n-title="zap" data-i18n-aria="zap" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h3.5c2 0 3.2 1 4.3 2.7l2.4 4.6c1.1 1.7 2.3 2.7 4.3 2.7H21M3 17h3.5c1.4 0 2.4-.5 3.2-1.4M14.3 8.4c.8-.9 1.8-1.4 3.2-1.4H21M18 4l3 3-3 3M18 14l3 3-3 3"/></svg></button>
+          <button class="ctl" id="miniBtn" data-i18n-title="mini" data-i18n-aria="mini" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M14 13h4v3h-4z" fill="currentColor"/></svg></button>
+          <button class="ctl" id="theaterBtn" data-i18n-title="theater" data-i18n-aria="theater"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <aside class="side">
+    <div class="tabs" role="tablist">
+      <button role="tab" id="tabNow" aria-selected="true" aria-controls="paneNow" data-i18n="tabNow"></button>
+      <button role="tab" id="tabQ" aria-selected="false" aria-controls="paneQ"><span data-i18n="tabQ"></span><span class="count" id="queueCount"></span></button>
+    </div>
+    <section class="pane" id="paneNow" role="tabpanel">
+      <div class="now">
+        <div>
+          <p class="eyebrow" id="eyebrow"></p>
+          <h2 class="anime" id="anime">&nbsp;</h2>
+          <p class="credits" id="credits"></p>
+        </div>
+        <div id="profiles"></div>
+        <div id="tagsBox" hidden><p class="section-h" data-i18n="tagsH"></p><dl class="taglist" id="tagList"></dl></div>
+        <p class="meta" id="cardMeta"></p>
+      </div>
+    </section>
+    <section class="pane" id="paneQ" role="tabpanel" hidden><ul class="queue" id="queue"></ul></section>
+  </aside>
+</div>
+
+<div class="guide" id="guide" hidden role="dialog" aria-modal="true" aria-label="Guia de canais">
+  <nav class="cats" id="cats"></nav>
+  <div class="gmain" id="gmain">
+    <div class="gsearch">
+      <label><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="find" type="search" data-i18n-ph="findPh" data-i18n-aria="findPh" autocomplete="off"></label>
+      <button class="btn" id="newChannel" data-i18n="newCh"></button>
+      <button class="btn ghost" id="closeGuide" data-i18n="close" data-i18n-title="closeEsc"></button>
+    </div>
+    <div id="gcontent"></div>
+  </div>
+</div>
+
+<dialog class="editor" id="editor">
+  <h2 id="edTitle"></h2>
+  <form id="edForm" autocomplete="off">
+    <label><span data-i18n="edName"></span> <input id="edName" required maxlength="40" data-i18n-ph="edNamePh"></label>
+    <label><span data-i18n="edTags"></span>
+      <div class="tagbox">
+        <input id="edTag" data-i18n-ph="edTagPh" aria-autocomplete="list" aria-controls="suggest">
+        <ul class="suggest" id="suggest" role="listbox" hidden></ul>
+      </div>
+    </label>
+    <div class="chips" id="chips"></div>
+    <p class="hint" data-i18n="edHint"></p>
+    <label><span data-i18n="edScore"></span>
+      <select id="edScore">
+        <option value="0" data-i18n="any"></option><option value="20">20</option><option value="30">30</option><option value="50">50</option><option value="100">100</option>
+        <option value="150">150</option><option value="200">200</option><option value="300">300</option><option value="400">400</option><option value="500">500</option><option value="1000">1000</option>
+      </select>
+    </label>
+    <div class="row">
+      <button class="btn primary" type="submit" data-i18n="save"></button>
+      <button class="btn" type="button" id="edCancel" data-i18n="cancel"></button>
+      <button class="btn ghost danger" type="button" id="edDelete" data-i18n="del"></button>
+    </div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const FPS = 24;
+const FAV_ID = 'favoritos';
+const ZAP_ID = 'aleatorio';
+const $ = (id) => document.getElementById(id);
+const CATS = ['Destaques', 'Meus canais', 'Combos', 'Estilos', 'Cenas', 'Assinaturas', 'Animadores', 'Animes', 'Ocidental', 'Clipes musicais', 'Bastidores'];
+// optional category from presets.local.mjs (via /api/config); hidden when absent
+let EXTRA = null;
+// each category with its traditional color and Japanese name
+const CAT_STYLE = {
+  'Destaques': ['--shu', '注目'], 'Meus canais': ['--text', '私の'], 'Combos': ['--daidai', '合体'],
+  'Estilos': ['--yamabuki', '作画'], 'Cenas': ['--wakatake', '場面'], 'Assinaturas': ['--ayame', '癖'],
+  'Animadores': ['--asagi', '原画'], 'Animes': ['--sakura', '作品'],
+  'Ocidental': ['--sora', '洋画'], 'Clipes musicais': ['--wakakusa', '音楽'], 'Bastidores': ['--nezumi', '裏方'],
+  'Escondidas': ['--nezumi', '非表示'],
+};
+const catVar = (cat) => `var(${(EXTRA && cat === EXTRA.name ? [EXTRA.color] : CAT_STYLE[cat] || CAT_STYLE['Meus canais'])[0]})`;
+const colorOf = (c) => (!c || c.virtual || c.temp ? 'var(--shu)' : c.extra && EXTRA ? catVar(EXTRA.name) : catVar(c.group || 'Meus canais'));
+const TAG_COLOR = { Anime: 'var(--sakura)', 'Animação': 'var(--asagi)', Personagens: 'var(--yamabuki)', Estilo: 'var(--wakatake)', Outros: 'var(--nezumi)' };
+
+const ICON = {
+  edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16v4Z"/></svg>',
+  eyeOff: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18M10.6 5.1A10 10 0 0 1 12 5c5 0 9 4.5 10 7a13 13 0 0 1-3 4.1M6.6 6.6A13 13 0 0 0 2 12c1 2.5 5 7 10 7a10 10 0 0 0 5.4-1.6M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>',
+  shuffle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h3.5c2 0 3.2 1 4.3 2.7l2.4 4.6c1.1 1.7 2.3 2.7 4.3 2.7H21M3 17h3.5c1.4 0 2.4-.5 3.2-1.4M14.3 8.4c.8-.9 1.8-1.4 3.2-1.4H21M18 4l3 3-3 3M18 14l3 3-3 3"/></svg>',
+  star: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="m12 3 2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 16.8l-5.4 2.9 1.1-6.1-4.5-4.2 6.1-.8L12 3Z"/></svg>',
+  plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  chev: '<svg class="chev" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 4.5 3 3 3-3"/></svg>',
+};
+
+let state = null;
+const tagTypes = {};
+let profiles = {};
+let channel = null, tempChannel = null;
+let queue = [], history = [], current = null, fetching = null, exhausted = false;
+let seenSet = new Set();
+let soundOk = false, userMuted = false;
+let active = $('vA'), standby = $('vB');
+let guideCat = 'Destaques';
+const pages = new Map();   // página atual do ranking de cada canal, só nesta sessão
+
+const ls = { get(k, d) { try { return localStorage.getItem(k) ?? d; } catch { return d; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} } };
+
+// ---------- language (Portuguese and English) ----------
+const I18N = {
+  pt: {
+    finder: 'Guia de canais: buscar canal, anime, animador ou tag', guideG: 'Guia de canais (G)', guide: 'Guia',
+    pin: 'Sempre por cima', pinOn: 'Sempre por cima: ligado', pinToast: 'Sempre por cima das outras janelas', pinOff: 'Janela normal',
+    min: 'Minimizar', max: 'Maximizar', close: 'Fechar', closeEsc: 'Fechar (Esc)', miniExit: 'Sair do modo só o player (P)',
+    tuning: 'Sintonizando', sound: 'Ligar o som', sheet: 'Linha do tempo em quadros. Clique pra pular, setas andam um quadro.', frame: 'quadro',
+    chUp: 'Canal anterior (↑)', chDown: 'Próximo canal (↓)', chPill: 'Abrir o guia de canais (G)', orderA: 'Ordem do canal (O)',
+    prev: 'Clipe anterior (←)', next: 'Próximo clipe (→)', pause: 'Pausar (espaço)', play: 'Tocar (espaço)', pauseA: 'Pausar', playA: 'Tocar',
+    fav: 'Favoritar (F)', zap: 'Misturar a categoria deste canal (Z)', mini: 'Só o player (P)', theater: 'Tela cheia (T)',
+    tabNow: 'Agora', tabQ: 'A seguir', tagsH: 'Tags do clipe', findPh: 'Buscar canal, anime, animador ou tag', newCh: 'Criar canal', newChSub: 'juntar tags e esconder outras',
+    edNew: 'Novo canal', edEdit: 'Editar canal', editX: 'Editar {n}', edName: 'Nome do canal', edNamePh: 'Ex.: Lutas do Bones', edTags: 'Tags', edTagPh: 'anime, animador ou tag',
+    edHint: 'Comece com - pra esconder a tag (ex.: -western). Clique numa tag pra trocar entre mostrar e esconder.', edScore: 'Score mínimo', any: 'Qualquer',
+    save: 'Salvar canal', cancel: 'Cancelar', del: 'Apagar', undo: 'Desfazer',
+    shuffle: 'Aleatório', favorites: 'Favoritos', mixOf: 'Mistura: {c}', mixBtn: 'Misturar {c}', shuffleSub: 'um canal diferente a cada clipe', savedClips: '{n} clipes salvos',
+    rank: 'Ranking', rankTitle: 'Tocando do maior score pro menor. Clique pra voltar ao aleatório (O)', randTitle: 'Tocando em ordem aleatória. Clique pra tocar do maior score pro menor (O)',
+    rankToast: 'Do maior score pro menor', randToast: 'Ordem aleatória',
+    stepHint: 'Abra um canal do guia pra trocar com ↑ e ↓', onlyTag: 'Tocando só {n}', savedMine: '{n} salvo em Meus canais',
+    apiDown: 'O Sakugabooru não respondeu ({e}). Tente o próximo clipe daqui a pouco.',
+    noFav: 'Nenhum favorito ainda. Aperte a estrela (ou F) num clipe pra salvar ele aqui.', noClips: 'Nenhum clipe com essas tags e esse score. Edite o canal no guia e baixe o score mínimo ou tire uma tag.',
+    firstClip: 'Esse é o primeiro clipe da sessão', clipFail: 'Esse clipe não abriu, pulando', unfav: 'Tirado dos favoritos', faved: 'Salvo nos favoritos',
+    muted: 'Som desligado', unmuted: 'Som ligado', max6: 'O Sakugabooru aceita até 6 tags pra mostrar', chSaved: 'Canal {n} salvo', chDeleted: 'Canal {n} apagado',
+    noAnime: 'Anime sem tag', unknownArtist: 'Animador desconhecido', viewOn: 'ver no Sakugabooru', uploadedBy: 'enviado por {n}', whoAnimated: 'Quem animou',
+    noProfile: 'Sem ficha ainda', channelOf: 'Canal de {n}', age: '{n} anos', aboutAge: 'cerca de {n} anos', lived: '{a} a {b}',
+    tagPlay: 'Tocar um canal só com {n}', tagHide: 'Nunca mais mostrar {n}', tagHideA: 'Esconder {n} em todos os canais',
+    hidden: '{n} escondida em todos os canais', unhidden: '{n} voltou', noHidden: 'Nenhuma tag escondida.', showAgain: 'Mostrar de novo',
+    found1: '{n} canal. Enter toca o primeiro.', foundN: '{n} canais. Enter toca o primeiro.', tagsOn: 'Tags no Sakugabooru', lookingUp: 'Procurando a tag no Sakugabooru.',
+    chipHide: 'Clique pra esconder essa tag', chipShow: 'Clique pra mostrar essa tag', removeX: 'Remover {n}',
+    'row.Anime': 'Anime', 'row.Animação': 'Animação', 'row.Personagens': 'Personagens', 'row.Estilo': 'Estilo', 'row.Outros': 'Outros',
+    'info.Destaques': 'O melhor do Sakugabooru, os bastidores e os seus favoritos.', 'info.Meus canais': 'Canais que você criou ou salvou a partir de uma tag.',
+    'info.Combos': 'Um estilo cruzado com um grupo: lutas com smears, idols dançando, fogo com explosão.', 'info.Estilos': 'Efeitos e tipos de movimento: fogo, fumaça, lutas, smears.',
+    'info.Cenas': 'O que acontece na tela: caminhada, voo, multidão, robô.', 'info.Assinaturas': 'Traços que viraram a marca de um animador.',
+    'info.Animadores': 'Um canal por animador, com a ficha de quem é e do que fez.', 'info.Animes': 'Séries e filmes, do mais postado pro menos.',
+    'info.Ocidental': 'Disney clássica, Castlevania, Arcane e o resto do ocidente.', 'info.Clipes musicais': 'Videoclipes animados.', 'info.Bastidores': 'Storyboard, layout, rascunho e douga.',
+    'info.Escondidas': 'Tags que nunca aparecem, em nenhum canal. Pra esconder mais, use o olho riscado ao lado de uma tag do clipe.',
+  },
+  en: {
+    finder: 'Channel guide: search channels, anime, animators or tags', guideG: 'Channel guide (G)', guide: 'Guide',
+    pin: 'Always on top', pinOn: 'Always on top: on', pinToast: 'Staying on top of other windows', pinOff: 'Normal window',
+    min: 'Minimize', max: 'Maximize', close: 'Close', closeEsc: 'Close (Esc)', miniExit: 'Exit player-only mode (P)',
+    tuning: 'Tuning in', sound: 'Turn sound on', sheet: 'Timeline in frames. Click to jump, arrow keys step one frame.', frame: 'frame',
+    chUp: 'Previous channel (↑)', chDown: 'Next channel (↓)', chPill: 'Open the channel guide (G)', orderA: 'Channel order (O)',
+    prev: 'Previous clip (←)', next: 'Next clip (→)', pause: 'Pause (space)', play: 'Play (space)', pauseA: 'Pause', playA: 'Play',
+    fav: 'Favorite (F)', zap: "Shuffle this channel's category (Z)", mini: 'Player only (P)', theater: 'Full screen (T)',
+    tabNow: 'Now', tabQ: 'Up next', tagsH: 'Clip tags', findPh: 'Search channels, anime, animators or tags', newCh: 'New channel', newChSub: 'combine tags, hide others',
+    edNew: 'New channel', edEdit: 'Edit channel', editX: 'Edit {n}', edName: 'Channel name', edNamePh: 'E.g. Bones fights', edTags: 'Tags', edTagPh: 'anime, animator or tag',
+    edHint: 'Start with - to hide a tag (e.g. -western). Click a tag to switch between show and hide.', edScore: 'Minimum score', any: 'Any',
+    save: 'Save channel', cancel: 'Cancel', del: 'Delete', undo: 'Undo',
+    shuffle: 'Shuffle', favorites: 'Favorites', mixOf: 'Mix: {c}', mixBtn: 'Shuffle {c}', shuffleSub: 'a different channel every clip', savedClips: '{n} saved clips',
+    rank: 'Top score', rankTitle: 'Playing from highest to lowest score. Click to go back to shuffle (O)', randTitle: 'Playing in random order. Click to play by highest score (O)',
+    rankToast: 'Highest score first', randToast: 'Random order',
+    stepHint: 'Open a channel from the guide to switch with ↑ and ↓', onlyTag: 'Playing only {n}', savedMine: '{n} saved to My channels',
+    apiDown: "Sakugabooru didn't respond ({e}). Try the next clip in a moment.",
+    noFav: 'No favorites yet. Press the star (or F) on a clip to save it here.', noClips: 'No clips with these tags and this score. Edit the channel in the guide and lower the minimum score or remove a tag.',
+    firstClip: 'This is the first clip of the session', clipFail: "This clip didn't load, skipping", unfav: 'Removed from favorites', faved: 'Saved to favorites',
+    muted: 'Sound off', unmuted: 'Sound on', max6: 'Sakugabooru accepts up to 6 tags to show', chSaved: 'Channel {n} saved', chDeleted: 'Channel {n} deleted',
+    noAnime: 'Untagged anime', unknownArtist: 'Unknown animator', viewOn: 'view on Sakugabooru', uploadedBy: 'uploaded by {n}', whoAnimated: 'Who animated',
+    noProfile: 'No profile yet', channelOf: '{n} channel', age: '{n} years old', aboutAge: 'about {n} years old', lived: '{a} to {b}',
+    tagPlay: 'Play a channel with only {n}', tagHide: 'Never show {n} again', tagHideA: 'Hide {n} on every channel',
+    hidden: '{n} hidden on every channel', unhidden: '{n} is back', noHidden: 'No hidden tags.', showAgain: 'Show again',
+    found1: '{n} channel. Enter plays the first.', foundN: '{n} channels. Enter plays the first.', tagsOn: 'Tags on Sakugabooru', lookingUp: 'Looking up the tag on Sakugabooru.',
+    chipHide: 'Click to hide this tag', chipShow: 'Click to show this tag', removeX: 'Remove {n}',
+    'row.Anime': 'Anime', 'row.Animação': 'Animation', 'row.Personagens': 'Characters', 'row.Estilo': 'Style', 'row.Outros': 'Other',
+    'info.Destaques': "Sakugabooru's best, behind-the-scenes material and your favorites.", 'info.Meus canais': 'Channels you created or saved from a tag.',
+    'info.Combos': 'A style crossed with a group: fights with smears, idols dancing, fire with explosions.', 'info.Estilos': 'Effects and kinds of motion: fire, smoke, fights, smears.',
+    'info.Cenas': "What's happening on screen: walking, flying, crowds, robots.", 'info.Assinaturas': "Drawing habits that became an animator's trademark.",
+    'info.Animadores': 'One channel per animator, with a profile of who they are and what they made.', 'info.Animes': 'Series and films, most posted first.',
+    'info.Ocidental': 'Classic Disney, Castlevania, Arcane and the rest of the West.', 'info.Clipes musicais': 'Animated music videos.', 'info.Bastidores': 'Storyboards, layouts, roughs and douga.',
+    'info.Escondidas': 'Tags that never show up, on any channel. To hide more, use the crossed-out eye next to a clip tag.',
+  },
+};
+const CAT_EN = { 'Destaques': 'Highlights', 'Meus canais': 'My channels', 'Combos': 'Combos', 'Estilos': 'Styles', 'Cenas': 'Scenes', 'Assinaturas': 'Signatures', 'Animadores': 'Animators', 'Animes': 'Anime', 'Ocidental': 'Western', 'Clipes musicais': 'Music videos', 'Bastidores': 'Behind the scenes', 'Escondidas': 'Hidden' };
+let lang = (() => { const v = ls.get('sakugatv.lang', ''); return v || (navigator.language || '').toLowerCase().startsWith('pt') ? (v || 'pt') : 'en'; })();
+function t(k, vars) { let s = (I18N[lang] && I18N[lang][k]) ?? I18N.pt[k] ?? k; if (vars) for (const [a, b] of Object.entries(vars)) s = s.split(`{${a}}`).join(b); return s; }
+const locale = () => (lang === 'en' ? 'en-US' : 'pt-BR');
+const catName = (c) => (EXTRA && c === EXTRA.name ? EXTRA.name : lang === 'en' ? CAT_EN[c] || c : c);
+const catInfo = (c) => (EXTRA && c === EXTRA.name ? EXTRA.info?.[lang] || '' : t('info.' + c));
+const chName = (c) => (lang === 'en' && c.name_en ? c.name_en : c.name);
+function cats() { const list = [...CATS]; if (EXTRA && state.channels.some((c) => c.extra)) list.splice(list.indexOf('Ocidental'), 0, EXTRA.name); return list; }
+function applyStatic() {
+  document.documentElement.lang = lang === 'en' ? 'en' : 'pt-BR';
+  for (const el of document.querySelectorAll('[data-i18n]')) el.textContent = t(el.dataset.i18n);
+  for (const el of document.querySelectorAll('[data-i18n-title]')) el.title = t(el.dataset.i18nTitle);
+  for (const el of document.querySelectorAll('[data-i18n-aria]')) el.setAttribute('aria-label', t(el.dataset.i18nAria));
+  for (const el of document.querySelectorAll('[data-i18n-ph]')) el.placeholder = t(el.dataset.i18nPh);
+  for (const sp of document.querySelectorAll('#langBtn [data-l]')) sp.classList.toggle('on', sp.dataset.l === lang);
+}
+function setLang(l) {
+  lang = l; ls.set('sakugatv.lang', l);
+  applyStatic();
+  if (!state) return;
+  renderNowBar(); setPlayIcon(!active.paused); drawSheet();
+  if (current) renderNow(current);
+  renderQueue();
+  if (!$('guide').hidden) renderGuide();
+}
+$('langBtn').onclick = () => setLang(lang === 'pt' ? 'en' : 'pt');
+applyStatic();
+
+// ---------- state ----------
+let saveTimer;
+function saveNow() { clearTimeout(saveTimer); return fetch('/api/state', { method: 'PUT', body: JSON.stringify(state) }); }
+function save() { clearTimeout(saveTimer); saveTimer = setTimeout(saveNow, 400); }
+function toast(msg) {
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 1800);
+}
+function toastAction(msg, label, fn) {
+  const t = $('toast'); t.textContent = msg;
+  const b = document.createElement('button'); b.textContent = label; b.className = 'undo';
+  b.onclick = () => { t.classList.remove('show'); fn(); };
+  t.append(b); t.classList.add('show');
+  clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 5000);
+}
+
+// ---------- tags ----------
+function pretty(tag) { return tag.replace(/^~/, '').replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()); }
+const fold = (t) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/_/g, ' ');
+function describe(post) {
+  const types = { ...tagTypes, ...(post.tagTypes || {}) };
+  const series = post.tags.filter((t) => types[t] === 'copyright');
+  const anime = series.find((t) => !t.endsWith('_series')) || series[0];
+  const named = post.tags.filter((t) => types[t] === 'artist' && t !== 'artist_unknown');
+  const src = (post.source || '').trim();
+  return {
+    anime: anime ? pretty(anime) : t('noAnime'),
+    artistTags: named,
+    artists: named.length ? named.map((x) => profiles[x]?.nome || pretty(x)) : [t('unknownArtist')],
+    episode: src && !/^https?:/i.test(src) ? src : '',
+  };
+}
+
+// ---------- channels ----------
+function inCat(c, cat) { return EXTRA && cat === EXTRA.name ? !!c.extra : (c.group || 'Meus canais') === cat; }
+function catChannels(cat) {
+  const list = state.channels.filter((c) => inCat(c, cat));
+  return cat === 'Destaques' || cat === 'Meus canais' ? list : list.sort((a, b) => (b.posts || 0) - (a.posts || 0));
+}
+// TV-style channel number: the position in the guide, category by category
+let chNumbers = new Map();
+function numberChannels() {
+  chNumbers = new Map();
+  let n = 1;
+  for (const cat of CATS) if (!EXTRA || cat !== EXTRA.name) for (const c of catChannels(cat)) chNumbers.set(c.id, n++);
+}
+const chNum = (id) => (chNumbers.has(id) ? 'CH ' + String(chNumbers.get(id)).padStart(3, '0') : id === ZAP_ID ? 'MIX' : id === FAV_ID ? 'FAV' : 'TAG');
+function channels() {
+  return [
+    { id: ZAP_ID, name: t('shuffle'), include: [], exclude: [], minScore: 0, virtual: true },
+    { id: FAV_ID, name: t('favorites'), include: [], exclude: [], minScore: 0, virtual: true },
+    ...(tempChannel ? [tempChannel] : []),
+    ...state.channels,
+  ];
+}
+function channelLabel(c) {
+  if (c.id === ZAP_ID) return state.zapScope && state.zapScope !== 'Todos' ? t('mixOf', { c: catName(state.zapScope) }) : t('shuffle');
+  if (c.id === FAV_ID) return t('favorites');
+  return chName(c);
+}
+function ruleText(c) {
+  const parts = [...c.include.map((t) => t.replace(/^~/, '')), ...c.exclude.map((t) => '-' + t)];
+  if (c.minScore) parts.push(`score ${c.minScore}+`);
+  return parts.join(' ') || 'tudo';
+}
+function zapPool(scope) {
+  const pool = state.channels.filter((c) => (!scope || scope === 'Todos' ? !c.extra : inCat(c, scope)));
+  return pool.length ? pool : state.channels.filter((c) => !c.extra);
+}
+
+function tune(id, opts = {}) {
+  if (tempChannel && id !== tempChannel.id) tempChannel = null;
+  if (id === ZAP_ID) state.zapScope = opts.scope || state.zapScope || 'Todos';
+  const c = channels().find((x) => x.id === id) || channels().find((x) => x.id === 'top') || channels()[0];
+  channel = c;
+  if (!c.temp) { state.lastChannel = c.id; if (c.id !== ZAP_ID) state.lastPicked = c.id; save(); }
+  queue = []; exhausted = false; pages.delete(c.id); gen++;
+  renderNowBar();
+  if (!$('guide').hidden) renderGuide();
+  advance();
+}
+function renderNowBar() {
+  if (!channel) return;
+  $('chNum').textContent = chNum(channel.id);
+  $('chPill').style.setProperty('--c', colorOf(channel));
+  $('eyebrow').style.setProperty('--c', colorOf(channel));
+  $('chName').textContent = channelLabel(channel);
+  $('miniNow').textContent = '';
+  const b = document.createElement('b'); b.textContent = chNum(channel.id);
+  $('miniNow').append(b, channelLabel(channel));
+  $('zapBtn').setAttribute('aria-pressed', String(channel.id === ZAP_ID));
+  const rank = channel.order === 'score';
+  $('orderBtn').hidden = !!channel.virtual;
+  $('orderBtn').classList.toggle('rank', rank);
+  $('orderTxt').textContent = rank ? t('rank') : t('shuffle');
+  $('orderIcon').setAttribute('d', rank ? 'M4 6h10M4 12h7M4 18h4M17 5v14M14 16l3 3 3-3' : 'M3 7h3.5c2 0 3.2 1 4.3 2.7l2.4 4.6c1.1 1.7 2.3 2.7 4.3 2.7H21M18 14l3 3-3 3M3 17h3.5c1.4 0 2.4-.5 3.2-1.4M14.3 8.4c.8-.9 1.8-1.4 3.2-1.4H21M18 4l3 3-3 3');
+  $('orderBtn').title = rank ? t('rankTitle') : t('randTitle');
+  document.title = `${channelLabel(channel)} · SakugaTV`;
+}
+function stepChannel(dir) {
+  if (!channel || channel.virtual || channel.temp) { toast(t('stepHint')); return; }
+  const list = catChannels(channel.group || 'Meus canais');
+  const i = list.findIndex((c) => c.id === channel.id);
+  tune(list[(i + dir + list.length) % list.length].id);
+}
+function tuneTag(tag) {
+  const saved = state.channels.find((c) => c.include.length === 1 && c.include[0] === tag && !c.exclude.length);
+  if (saved) return tune(saved.id);
+  tempChannel = { id: 'tag:' + tag, name: profiles[tag]?.nome || pretty(tag), include: [tag], exclude: [], minScore: 0, temp: true };
+  tune(tempChannel.id);
+  toastAction(t('onlyTag', { n: tempChannel.name }), t('save'), saveTemp);
+}
+function saveTemp() {
+  if (!tempChannel) return;
+  const c = { ...tempChannel, id: 'c' + Date.now().toString(36) };
+  delete c.temp;
+  state.channels.push(c);
+  tempChannel = null; save(); numberChannels();
+  tune(c.id);
+  toast(t('savedMine', { n: c.name }));
+}
+
+// ---------- queue ----------
+// every channel or order change is a new generation: late responses from old fetches are dropped
+let gen = 0, fetchGen = -1;
+async function fetchMore() {
+  if (fetching) {
+    if (fetchGen === gen) return fetching;
+    await fetching.catch(() => {});
+    if (fetching) return fetching;
+  }
+  const my = fetchGen = gen;
+  const push = (list) => { if (my === gen) queue.push(...list); };
+  fetching = (async () => {
+    const inQueue = new Set([...queue.map((p) => p.id), current?.id]);
+    if (channel.id === ZAP_ID) {
+      const pool = zapPool(state.zapScope).sort(() => Math.random() - 0.5).slice(0, 3);
+      const mixed = [];
+      for (const c of pool) {
+        const q = new URLSearchParams({ include: c.include.join(','), exclude: c.exclude.join(','), minScore: c.minScore || 0 });
+        const res = await fetch('/api/posts?' + q).then((r) => r.json()).catch(() => ({ posts: [] }));
+        Object.assign(tagTypes, res.tagTypes || {});
+        const fresh = (res.posts || []).filter((p) => !inQueue.has(p.id) && !seenSet.has(p.id)).slice(0, 4);
+        for (const p of fresh) { p.via = c.name; p.viaCh = c.id; p.tagTypes = Object.fromEntries(p.tags.filter((t) => res.tagTypes[t]).map((t) => [t, res.tagTypes[t]])); inQueue.add(p.id); }
+        mixed.push(...fresh);
+      }
+      push(mixed.sort(() => Math.random() - 0.5));
+      return;
+    }
+    if (channel.id === FAV_ID) {
+      const pool = state.favorites.filter((p) => !inQueue.has(p.id));
+      for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+      push(pool);
+      if (!pool.length) exhausted = true;
+      return;
+    }
+    if (channel.order === 'score') {
+      // top score: pages in sequence, highest to lowest, without skipping seen clips
+      const page = (pages.get(channel.id) || 0) + 1;
+      pages.set(channel.id, page);
+      const q = new URLSearchParams({ include: channel.include.join(','), exclude: channel.exclude.join(','), minScore: channel.minScore || 0, order: 'score', page });
+      const res = await fetch('/api/posts?' + q).then((r) => r.json());
+      if (res.erro) throw new Error(res.erro);
+      Object.assign(tagTypes, res.tagTypes);
+      if (!res.rawCount) { exhausted = true; return; }
+      for (const p of res.posts) p.tagTypes = Object.fromEntries(p.tags.filter((t) => res.tagTypes[t]).map((t) => [t, res.tagTypes[t]]));
+      push(res.posts.filter((p) => !inQueue.has(p.id)));
+      return;
+    }
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const q = new URLSearchParams({ include: channel.include.join(','), exclude: channel.exclude.join(','), minScore: channel.minScore || 0 });
+      const res = await fetch('/api/posts?' + q).then((r) => r.json());
+      if (res.erro) throw new Error(res.erro);
+      Object.assign(tagTypes, res.tagTypes);
+      if (!res.rawCount) { exhausted = true; return; }
+      let fresh = res.posts.filter((p) => !inQueue.has(p.id) && !seenSet.has(p.id));
+      // small channel fully watched: allow repeats again
+      if (!fresh.length && attempt === 2) fresh = res.posts.filter((p) => !inQueue.has(p.id));
+      if (fresh.length) {
+        for (const p of fresh) p.tagTypes = Object.fromEntries(p.tags.filter((t) => res.tagTypes[t]).map((t) => [t, res.tagTypes[t]]));
+        push(fresh);
+        return;
+      }
+    }
+  })();
+  try { await fetching; } finally { fetching = null; renderQueue(); }
+}
+function renderQueue() {
+  const ul = $('queue'); ul.innerHTML = '';
+  for (const p of queue.slice(0, 15)) {
+    const d = describe(p);
+    const li = document.createElement('li');
+    const b = document.createElement('button');
+    b.innerHTML = '<img loading="lazy" alt=""><span><span class="q1"></span><span class="q2"></span></span>';
+    const img = b.querySelector('img');
+    img.onerror = () => { if (!img.dataset.retry) { img.dataset.retry = 1; setTimeout(() => { img.src = p.preview + '?r'; }, 1500); } };
+    img.src = p.preview;
+    b.querySelector('.q1').textContent = d.anime;
+    b.querySelector('.q2').textContent = (p.via ? p.via + ' · ' : '') + d.artists.join(', ');
+    b.onclick = () => { queue = queue.filter((x) => x !== p); queue.unshift(p); advance(); };
+    li.append(b); ul.append(li);
+  }
+  $('queueCount').textContent = queue.length ? String(queue.length) : '';
+}
+function showOverlay(text) { $('overlayText').textContent = text; $('overlay').hidden = !text; }
+async function advance() {
+  if (!queue.length) {
+    showOverlay(t('tuning'));
+    try { await fetchMore(); } catch (e) { showOverlay(t('apiDown', { e: e.message })); return; }
+  }
+  if (!queue.length) {
+    showOverlay(channel.id === FAV_ID ? t('noFav') : t('noClips'));
+    clearPlayer();
+    return;
+  }
+  if (current) history.push(current);
+  play(queue.shift());
+}
+function back() {
+  if (!history.length) { toast(t('firstClip')); return; }
+  if (current) queue.unshift(current);
+  play(history.pop());
+}
+function clearPlayer() {
+  current = null;
+  active.removeAttribute('src'); active.load();
+  $('anime').innerHTML = '&nbsp;'; $('credits').textContent = ''; $('profiles').innerHTML = ''; $('tagsBox').hidden = true; $('cardMeta').textContent = '';
+  renderQueue(); drawSheet();
+}
+function play(post) {
+  current = post;
+  showOverlay('');
+  if (channel.id !== FAV_ID && !seenSet.has(post.id)) { seenSet.add(post.id); state.seen.push(post.id); save(); }
+  if (standby.dataset.id == post.id) [active, standby] = [standby, active];
+  else active.src = post.file;
+  standby.hidden = true; active.hidden = false; standby.pause();
+  active.currentTime = 0;
+  // try with sound; if the browser blocks it, play muted and show the button
+  active.muted = userMuted;
+  active.play().then(() => { if (!userMuted) { soundOk = true; $('soundBtn').hidden = true; } })
+    .catch(() => { active.muted = true; $('soundBtn').hidden = false; active.play().catch(() => {}); });
+  renderNow(post);
+  $('favBtn').setAttribute('aria-pressed', String(state.favorites.some((f) => f.id === post.id)));
+  setPlayIcon(true);
+  renderQueue();
+  if (queue.length < 5 && !exhausted) fetchMore();
+  preloadNext();
+}
+function preloadNext() {
+  const next = queue[0];
+  if (!next) return;
+  standby.dataset.id = next.id; standby.src = next.file; standby.load();
+}
+
+// ---------- "Now" panel ----------
+function age(p) {
+  if (!p.nascimento) return null;
+  const y = (s) => Number(String(s).slice(0, 4));
+  if (p.falecimento) return t('lived', { a: y(p.nascimento), b: y(p.falecimento) });
+  const s = String(p.nascimento);
+  const now = new Date();
+  if (s.length < 10) return t('aboutAge', { n: now.getFullYear() - y(s) });
+  const b = new Date(s + 'T12:00:00');
+  let a = now.getFullYear() - b.getFullYear();
+  if (now < new Date(now.getFullYear(), b.getMonth(), b.getDate())) a--;
+  return t('age', { n: a });
+}
+function initials(name) { return name.split(/\s+/).map((w) => w[0]).slice(0, 2).join('').toUpperCase(); }
+function profileCard(tag, open) {
+  const p = profiles[tag];
+  const det = document.createElement('details'); det.className = 'prof'; det.open = open;
+  const name = p ? p.nome : pretty(tag);
+  const sum = document.createElement('summary');
+  sum.innerHTML = `<span class="avatar"></span><span class="who"><h3><span></span></h3><p class="sub"></p></span>${ICON.chev}`;
+  sum.querySelector('.avatar').textContent = initials(name);
+  sum.querySelector('h3 span').textContent = name;
+  if (p?.extra && EXTRA) { const b = document.createElement('span'); b.className = 'badge extra'; b.textContent = EXTRA.badge; sum.querySelector('h3').append(b); }
+  const L = p && lang === 'en' && p.en ? p.en : p;
+  sum.querySelector('.sub').textContent = p ? [p.nome_original, age(p), L.pais].filter(Boolean).join(' · ') : t('noProfile');
+  det.append(sum);
+  const body = document.createElement('div'); body.className = 'body';
+  if (p) {
+    const roles = [L.funcoes, (p.estudios || []).join(', ')].filter(Boolean).join(' · ');
+    if (roles) { const r = document.createElement('p'); r.className = 'roles'; r.textContent = roles; body.append(r); }
+    if (L.resumo) { const r = document.createElement('p'); r.textContent = L.resumo; body.append(r); }
+    if (p.obras?.length) {
+      const ul = document.createElement('ul'); ul.className = 'works';
+      for (const [oi, o] of p.obras.entries()) {
+        const funcao = L === p ? o.funcao : (p.en.obras_funcao || [])[oi] || o.funcao;
+        const li = document.createElement('li');
+        li.innerHTML = '<span class="y"></span><span><span class="t"></span> <em></em></span>';
+        li.querySelector('.y').textContent = o.ano || '';
+        li.querySelector('.t').textContent = o.titulo;
+        li.querySelector('em').textContent = funcao ? `· ${funcao}` : '';
+        ul.append(li);
+      }
+      body.append(ul);
+    }
+    if (L.curiosidade) { const r = document.createElement('p'); r.className = 'trivia'; r.textContent = L.curiosidade; body.append(r); }
+  }
+  const go = document.createElement('button'); go.className = 'btn go'; go.textContent = t('channelOf', { n: name });
+  go.onclick = () => tuneTag(tag);
+  body.append(go);
+  det.append(body);
+  return det;
+}
+const TAG_ROWS = { copyright: 'Anime', artist: 'Animação', character: 'Personagens', general: 'Estilo' };
+function renderNow(post) {
+  const d = describe(post);
+  $('eyebrow').textContent = `${chNum(post.viaCh || channel.id)} · ${post.via || channelLabel(channel)}`;
+  $('anime').textContent = d.anime;
+  const c = $('credits'); c.textContent = '';
+  c.append(d.artists.join(', '));
+  if (d.episode) c.append(` · ${d.episode}`);
+  c.append(` · score ${post.score} · `);
+  const a = document.createElement('a'); a.href = `https://www.sakugabooru.com/post/show/${post.id}`; a.target = '_blank'; a.rel = 'noopener'; a.textContent = t('viewOn'); c.append(a);
+
+  const pr = $('profiles'); pr.innerHTML = '';
+  if (d.artistTags.length) {
+    const h = document.createElement('p'); h.className = 'section-h'; h.textContent = t('whoAnimated');
+    const box = document.createElement('div'); box.className = 'profs';
+    const withProfile = d.artistTags.findIndex((t) => profiles[t]);
+    d.artistTags.forEach((t, i) => box.append(profileCard(t, i === withProfile)));
+    pr.append(h, box);
+  }
+
+  const types = { ...tagTypes, ...(post.tagTypes || {}) };
+  const rows = new Map();
+  for (const t of post.tags) {
+    if (t === 'animated') continue;
+    const label = TAG_ROWS[types[t] || 'general'] || 'Outros';
+    if (!rows.has(label)) rows.set(label, []);
+    rows.get(label).push(t);
+  }
+  const dl = $('tagList'); dl.innerHTML = '';
+  for (const label of ['Anime', 'Animação', 'Personagens', 'Estilo', 'Outros']) {
+    const tags = rows.get(label);
+    if (!tags) continue;
+    const wrap = document.createElement('div');
+    wrap.style.setProperty('--k', TAG_COLOR[label]);
+    const dt = document.createElement('dt'); dt.textContent = t('row.' + label);
+    const dd = document.createElement('dd');
+    for (const tg of tags) {
+      const pair = document.createElement('span'); pair.className = 'tagpair';
+      const b = document.createElement('button'); b.className = 'tag'; b.title = t('tagPlay', { n: tg }); b.textContent = tg.replace(/_/g, ' ');
+      b.onclick = () => tuneTag(tg);
+      const h = document.createElement('button'); h.className = 'hide'; h.title = t('tagHide', { n: tg }); h.setAttribute('aria-label', t('tagHideA', { n: tg }));
+      h.innerHTML = ICON.eyeOff; h.onclick = () => blockTag(tg);
+      pair.append(b, h); dd.append(pair);
+    }
+    wrap.append(dt, dd); dl.append(wrap);
+  }
+  $('tagsBox').hidden = false;
+  const meta = [`post #${post.id}`];
+  if (post.author) meta.push(t('uploadedBy', { n: post.author }));
+  if (post.created) meta.push(new Date(post.created * 1000).toLocaleDateString(locale()));
+  if (post.width) meta.push(`${post.width}×${post.height}`);
+  if (post.size) meta.push(`${(post.size / 1048576).toFixed(1).replace('.', ',')} MB`);
+  $('cardMeta').textContent = meta.join(' · ');
+}
+
+// hiding applies to every channel; the server reads the list from state.json
+function blockTag(tg) {
+  if (!state.blocked.includes(tg)) state.blocked.push(tg);
+  queue = queue.filter((p) => !p.tags.includes(tg));
+  saveNow(); renderQueue();
+  toastAction(t('hidden', { n: tg.replace(/_/g, ' ') }), t('undo'), () => unblockTag(tg));
+  if (current && current.tags.includes(tg)) advance();
+}
+function unblockTag(tg) {
+  state.blocked = state.blocked.filter((x) => x !== tg);
+  save();
+  if (!$('guide').hidden) renderGuide();
+  toast(t('unhidden', { n: tg.replace(/_/g, ' ') }));
+}
+
+// ---------- video ----------
+for (const v of [$('vA'), $('vB')]) {
+  v.addEventListener('ended', () => { if (v === active) advance(); });
+  v.addEventListener('timeupdate', () => { if (v === active) drawSheet(); });
+  v.addEventListener('error', () => { if (v === active && current) { toast(t('clipFail')); advance(); } });
+}
+function setPlayIcon(playing) {
+  $('playIcon').setAttribute('d', playing ? 'M7 5h3.5v14H7zM13.5 5H17v14h-3.5z' : 'M8 5.5v13l10.5-6.5z');
+  $('playBtn').setAttribute('aria-label', playing ? t('pauseA') : t('playA'));
+  $('playBtn').title = playing ? t('pause') : t('play');
+}
+function togglePlay() {
+  if (!current) return;
+  if (active.paused) { active.play(); setPlayIcon(true); } else { active.pause(); setPlayIcon(false); }
+}
+$('soundBtn').onclick = () => { soundOk = true; userMuted = false; active.muted = false; $('soundBtn').hidden = true; };
+
+// ---------- timesheet ----------
+const sheet = $('sheet');
+function drawSheet() {
+  const dpr = window.devicePixelRatio || 1;
+  const w = sheet.clientWidth, h = sheet.clientHeight;
+  if (!w) return;
+  if (sheet.width !== Math.round(w * dpr)) { sheet.width = Math.round(w * dpr); sheet.height = Math.round(h * dpr); }
+  const g = sheet.getContext('2d');
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  g.clearRect(0, 0, w, h);
+  const css = getComputedStyle(document.documentElement);
+  const dur = active.duration || 0;
+  const total = Math.max(1, Math.round(dur * FPS));
+  const now = Math.min(total, Math.round((active.currentTime || 0) * FPS));
+  const step = Math.max(1, Math.ceil(total / (w / 3)));
+  for (let f = 0; f <= total; f += step) {
+    const x = (f / total) * (w - 1) + 0.5;
+    const sec = f % FPS === 0, half = f % (FPS / 2) === 0;
+    const len = sec ? h - 12 : half ? (h - 12) * 0.6 : (h - 12) * 0.35;
+    g.strokeStyle = f <= now ? css.getPropertyValue('--shu') : css.getPropertyValue('--line');
+    g.lineWidth = sec ? 1.5 : 1;
+    g.beginPath(); g.moveTo(x, h - 12); g.lineTo(x, h - 12 - len); g.stroke();
+    if (sec && f > 0 && w / (dur || 1) > 26) {
+      g.fillStyle = css.getPropertyValue('--muted');
+      g.font = '10px "Geist Mono", monospace';
+      g.fillText(String(f / FPS), x - 3, h - 1);
+    }
+  }
+  $('koma').innerHTML = `${t('frame')} <b>${String(now).padStart(4, '0')}</b> / ${String(dur ? total : 0).padStart(4, '0')}`;
+}
+function seekFromEvent(e) {
+  if (!active.duration) return;
+  const r = sheet.getBoundingClientRect();
+  active.currentTime = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * active.duration;
+  drawSheet();
+}
+let dragging = false;
+sheet.addEventListener('pointerdown', (e) => { dragging = true; sheet.setPointerCapture(e.pointerId); seekFromEvent(e); });
+sheet.addEventListener('pointermove', (e) => dragging && seekFromEvent(e));
+sheet.addEventListener('pointerup', () => { dragging = false; });
+sheet.addEventListener('keydown', (e) => {
+  if (!active.duration || (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight')) return;
+  e.stopPropagation(); e.preventDefault();
+  active.pause(); setPlayIcon(false);
+  active.currentTime += (e.key === 'ArrowRight' ? 1 : -1) / FPS;
+});
+new ResizeObserver(drawSheet).observe(sheet);
+
+// ---------- favorites ----------
+function toggleFav() {
+  if (!current) return;
+  const i = state.favorites.findIndex((f) => f.id === current.id);
+  if (i >= 0) { state.favorites.splice(i, 1); toast(t('unfav')); }
+  else { state.favorites.push(current); toast(t('faved')); }
+  $('favBtn').setAttribute('aria-pressed', String(i < 0));
+  save();
+}
+
+// ---------- channel guide ----------
+function openGuide(focusSearch) {
+  $('guide').hidden = false;
+  if (channel && !channel.virtual && !channel.temp) guideCat = channel.extra && EXTRA && guideCat === EXTRA.name ? EXTRA.name : channel.group || 'Meus canais';
+  renderGuide();
+  $('gmain').scrollTop = 0;
+  if (focusSearch) $('find').focus();
+  else { const on = $('gcontent').querySelector('.tile.on'); on?.scrollIntoView({ block: 'center' }); (on || $('gcontent').querySelector('.tile'))?.querySelector('.pick')?.focus({ preventScroll: true }); }
+}
+function closeGuide() { $('guide').hidden = true; $('find').value = ''; remoteTags = []; }
+function renderCats() {
+  const nav = $('cats'); nav.innerHTML = `<h2>${t('guide')} <small>番組表</small></h2>`;
+  const add = (name, n) => {
+    const b = document.createElement('button'); b.className = 'cat';
+    b.style.setProperty('--c', catVar(name));
+    b.innerHTML = '<span class="nm"><span class="dot"></span><span class="t"></span><span class="kj"></span></span><span class="n"></span>';
+    b.querySelector('.t').textContent = catName(name); b.querySelector('.kj').textContent = EXTRA && name === EXTRA.name ? EXTRA.kanji : (CAT_STYLE[name] || [])[1] || ''; b.lastChild.textContent = n;
+    b.setAttribute('aria-current', String(!$('find').value.trim() && name === guideCat));
+    b.onclick = () => { guideCat = name; $('find').value = ''; remoteTags = []; renderGuide(); $('gmain').scrollTop = 0; };
+    nav.append(b);
+  };
+  for (const cat of cats()) add(cat, cat === 'Destaques' ? catChannels(cat).length + 2 : catChannels(cat).length);
+  nav.append(document.createElement('hr'));
+  add('Escondidas', state.blocked.length);
+}
+const thumbCache = new Map();
+const thumbObs = new IntersectionObserver((entries) => {
+  for (const e of entries) if (e.isIntersecting) { thumbObs.unobserve(e.target); loadThumb(e.target); }
+}, { root: $('gmain'), rootMargin: '400px' });
+async function loadThumb(el) {
+  const key = el.dataset.q;
+  if (!thumbCache.has(key)) thumbCache.set(key, fetch('/api/thumb?' + key).then((r) => r.json()).catch(() => ({})));
+  const t = await thumbCache.get(key);
+  if (t.preview) el.style.backgroundImage = `url("${t.preview}")`;
+}
+function profileLine(c) {
+  const tag = c.include.length === 1 ? c.include[0] : null;
+  const p = tag && profiles[tag];
+  if (!p) return ruleText(c);
+  return (p.obras || []).slice(0, 2).map((o) => o.titulo).join(', ') || p.funcoes || ruleText(c);
+}
+function tile(c, opts = {}) {
+  const el = document.createElement('div');
+  const isOn = channel && channel.id === c.id && (c.id !== ZAP_ID || (state.zapScope || 'Todos') === (opts.scope || 'Todos'));
+  el.className = 'tile' + (isOn ? ' on' : '') + (opts.add ? ' add' : '');
+  el.style.setProperty('--c', opts.color || colorOf(c));
+  const pick = document.createElement('button'); pick.className = 'pick';
+  pick.innerHTML = '<div class="thumb"></div><div class="tinfo"><span class="tname"><span></span></span><span class="tsub"></span></div>';
+  const th = pick.querySelector('.thumb');
+  if (opts.glyph) { const g = document.createElement('span'); g.className = 'glyph'; g.innerHTML = opts.glyph; th.append(g); }
+  else { th.dataset.q = new URLSearchParams({ include: c.include.join(','), exclude: c.exclude.join(',') }).toString(); thumbObs.observe(th); }
+  if (!opts.add) { const n = document.createElement('span'); n.className = 'ch'; n.textContent = chNum(c.id); th.append(n); }
+  if (c.posts) { const n = document.createElement('span'); n.className = 'pc'; n.textContent = `${c.posts.toLocaleString(locale())} posts`; th.append(n); }
+  pick.querySelector('.tname span').textContent = opts.title || chName(c);
+  if (c.extra && EXTRA) { const b = document.createElement('span'); b.className = 'badge extra'; b.textContent = EXTRA.badge; pick.querySelector('.tname').append(b); }
+  pick.querySelector('.tsub').textContent = opts.sub || profileLine(c);
+  pick.onclick = opts.onclick || (() => { tune(c.id); closeGuide(); });
+  el.append(pick);
+  if (!c.virtual && !opts.add) {
+    const ed = document.createElement('button'); ed.className = 'edit'; ed.title = t('edEdit'); ed.setAttribute('aria-label', t('editX', { n: chName(c) }));
+    ed.innerHTML = ICON.edit; ed.onclick = () => openEditor(c);
+    el.append(ed);
+  }
+  return el;
+}
+function head(title, text, actions = [], cat) {
+  const h = document.createElement('div'); h.className = 'ghead';
+  if (cat) h.style.setProperty('--c', catVar(cat));
+  const t = document.createElement('div');
+  const h3 = document.createElement('h3');
+  if (cat) { const bc = document.createElement('span'); bc.className = 'bar-c'; h3.append(bc); }
+  h3.append(cat ? catName(cat) : title);
+  const kjt = EXTRA && cat === EXTRA.name ? EXTRA.kanji : cat && CAT_STYLE[cat] ? CAT_STYLE[cat][1] : '';
+  if (kjt) { const kj = document.createElement('span'); kj.className = 'kjt'; kj.lang = 'ja'; kj.textContent = kjt; h3.append(kj); }
+  const p = document.createElement('p'); p.textContent = text;
+  t.append(h3, p);
+  const act = document.createElement('div'); act.className = 'row';
+  act.append(...actions);
+  h.append(t, act);
+  return h;
+}
+let remoteTags = [];
+function renderGuide() {
+  renderCats();
+  const box = $('gcontent'); box.innerHTML = '';
+  const q = fold($('find').value.trim());
+  if (q) return renderSearch(box, q);
+  if (guideCat === 'Escondidas') {
+    box.append(head('Escondidas', t('info.Escondidas'), [], 'Escondidas'));
+    if (!state.blocked.length) { const p = document.createElement('p'); p.className = 'empty'; p.textContent = t('noHidden'); box.append(p); return; }
+    const ul = document.createElement('ul'); ul.className = 'rows';
+    for (const tg of state.blocked) {
+      const li = document.createElement('li');
+      const sp = document.createElement('span'); sp.textContent = tg;
+      const b = document.createElement('button'); b.className = 'btn'; b.textContent = t('showAgain'); b.onclick = () => unblockTag(tg);
+      li.append(sp, b); ul.append(li);
+    }
+    box.append(ul);
+    return;
+  }
+  const list = catChannels(guideCat);
+  const actions = [];
+  if (!['Destaques', 'Meus canais'].includes(guideCat) && list.length > 1) {
+    const b = document.createElement('button'); b.className = 'btn primary';
+    b.textContent = t('mixBtn', { c: catName(guideCat) });
+    b.onclick = () => { tune(ZAP_ID, { scope: guideCat }); closeGuide(); };
+    actions.push(b);
+  }
+  box.append(head(guideCat, catInfo(guideCat), actions, guideCat));
+  const grid = document.createElement('div'); grid.className = 'grid';
+  if (guideCat === 'Destaques') {
+    grid.append(tile(channels()[0], { glyph: ICON.shuffle, title: t('shuffle'), sub: t('shuffleSub'), onclick: () => { tune(ZAP_ID, { scope: 'Todos' }); closeGuide(); } }));
+    grid.append(tile(channels()[1], { glyph: ICON.star, sub: t('savedClips', { n: state.favorites.length }) }));
+  }
+  if (guideCat === 'Meus canais') {
+    grid.append(tile({ id: 'add', name: t('newCh'), include: [], exclude: [] }, { add: true, glyph: ICON.plus, sub: t('newChSub'), onclick: () => openEditor(null) }));
+  }
+  for (const c of list) grid.append(tile(c));
+  box.append(grid);
+}
+function renderSearch(box, q) {
+  const list = state.channels.filter((c) => fold(c.name).includes(q) || fold(c.name_en || '').includes(q) || c.include.some((t) => fold(t).includes(q)) || fold(profileLine(c)).includes(q));
+  box.append(head(`“${$('find').value.trim()}”`, t(list.length === 1 ? 'found1' : 'foundN', { n: list.length })));
+  if (list.length) {
+    const grid = document.createElement('div'); grid.className = 'grid';
+    for (const c of list.slice(0, 40)) grid.append(tile(c));
+    box.append(grid);
+  }
+  if (remoteTags.length) {
+    const h = document.createElement('p'); h.className = 'gsec'; h.textContent = t('tagsOn');
+    const ul = document.createElement('ul'); ul.className = 'rows';
+    for (const t of remoteTags) {
+      const li = document.createElement('li');
+      const b = document.createElement('button'); b.className = 'rowpick';
+      b.innerHTML = '<span></span>'; b.firstChild.textContent = t.name;
+      b.onclick = () => { tuneTag(t.name); closeGuide(); };
+      const sm = document.createElement('small'); sm.textContent = `${t.type} · ${t.count} posts`;
+      li.append(b, sm); ul.append(li);
+    }
+    box.append(h, ul);
+  } else if (!list.length) {
+    const p = document.createElement('p'); p.className = 'empty'; p.textContent = t('lookingUp'); box.append(p);
+  }
+}
+let findTimer;
+$('find').addEventListener('input', () => {
+  clearTimeout(findTimer); remoteTags = []; renderGuide();
+  const q = $('find').value.trim();
+  if (q.length < 3) return;
+  findTimer = setTimeout(async () => {
+    remoteTags = (await fetch('/api/tags?q=' + encodeURIComponent(q)).then((r) => r.json()).catch(() => [])).slice(0, 10);
+    if ($('find').value.trim() === q) renderGuide();
+  }, 300);
+});
+$('find').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('gcontent').querySelector('.tile .pick, .rowpick')?.click(); });
+$('openGuide').onclick = () => openGuide(true);
+$('chPill').onclick = () => openGuide(false);
+$('closeGuide').onclick = closeGuide;
+$('newChannel').onclick = () => openEditor(null);
+
+// ---------- channel editor ----------
+let editing = null, draft = null, sugIndex = -1, sugItems = [];
+function openEditor(c) {
+  editing = c;
+  draft = c ? { include: [...c.include], exclude: [...c.exclude] } : { include: [], exclude: [] };
+  $('edTitle').textContent = c ? t('edEdit') : t('edNew');
+  $('edName').value = c ? c.name : '';
+  $('edScore').value = String(c ? c.minScore || 0 : 100);
+  if ($('edScore').value === '') $('edScore').value = '0';
+  $('edDelete').hidden = !c;
+  renderChips();
+  $('editor').showModal();
+  $('edName').focus();
+}
+function closeEditor() { $('editor').close(); $('suggest').hidden = true; editing = null; }
+function renderChips() {
+  const box = $('chips'); box.innerHTML = '';
+  for (const [tg, inc] of [...draft.include.map((x) => [x, true]), ...draft.exclude.map((x) => [x, false])]) {
+    const chip = document.createElement('span'); chip.className = 'chip' + (inc ? '' : ' out');
+    const flip = document.createElement('button'); flip.type = 'button'; flip.textContent = (inc ? '' : '−') + tg;
+    flip.title = inc ? t('chipHide') : t('chipShow');
+    flip.onclick = () => { removeTag(tg); (inc ? draft.exclude : draft.include).push(tg); renderChips(); };
+    const x = document.createElement('button'); x.type = 'button'; x.textContent = '×'; x.setAttribute('aria-label', t('removeX', { n: tg }));
+    x.onclick = () => { removeTag(tg); renderChips(); };
+    chip.append(flip, x); box.append(chip);
+  }
+}
+function removeTag(t) { draft.include = draft.include.filter((x) => x !== t); draft.exclude = draft.exclude.filter((x) => x !== t); }
+function addTag(raw) {
+  let t = raw.trim().toLowerCase().replace(/\s+/g, '_');
+  const out = t.startsWith('-'); t = t.replace(/^-+/, '');
+  if (!t) return;
+  removeTag(t);
+  if (!out && draft.include.length >= 6) { toast(t('max6')); return; }
+  (out ? draft.exclude : draft.include).push(t);
+  $('edTag').value = ''; $('suggest').hidden = true; renderChips();
+}
+let sugTimer;
+$('edTag').addEventListener('input', () => {
+  clearTimeout(sugTimer);
+  const v = $('edTag').value.trim(), q = v.replace(/^-/, '');
+  if (q.length < 2) { $('suggest').hidden = true; return; }
+  sugTimer = setTimeout(async () => {
+    sugItems = await fetch('/api/tags?q=' + encodeURIComponent(q)).then((r) => r.json()).catch(() => []);
+    sugIndex = -1;
+    const ul = $('suggest'); ul.innerHTML = '';
+    for (const s of sugItems) {
+      const li = document.createElement('li'); li.setAttribute('role', 'option');
+      li.innerHTML = '<span></span><span class="kind"></span>';
+      li.firstChild.textContent = s.name; li.lastChild.textContent = `${s.type} · ${s.count}`;
+      li.onmousedown = (e) => { e.preventDefault(); addTag((v.startsWith('-') ? '-' : '') + s.name); };
+      ul.append(li);
+    }
+    ul.hidden = !sugItems.length;
+  }, 220);
+});
+$('edTag').addEventListener('keydown', (e) => {
+  const items = [...$('suggest').children];
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    if (!items.length) return;
+    e.preventDefault();
+    sugIndex = (sugIndex + (e.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length;
+    items.forEach((li, i) => li.setAttribute('aria-selected', String(i === sugIndex)));
+  } else if (e.key === 'Enter') {
+    e.preventDefault();
+    const v = $('edTag').value.trim();
+    if (sugIndex >= 0 && !$('suggest').hidden) addTag((v.startsWith('-') ? '-' : '') + sugItems[sugIndex].name);
+    else if (v) addTag(v);
+  }
+});
+$('edTag').addEventListener('blur', () => setTimeout(() => { $('suggest').hidden = true; }, 100));
+$('edForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  if ($('edTag').value.trim()) addTag($('edTag').value);
+  const data = { name: $('edName').value.trim(), include: draft.include, exclude: draft.exclude, minScore: Number($('edScore').value) };
+  let id;
+  if (editing) { Object.assign(editing, data); id = editing.id; }
+  else { id = 'c' + Date.now().toString(36); state.channels.push({ id, ...data }); }
+  save(); closeEditor(); numberChannels();
+  tune(id); closeGuide();
+  toast(t('chSaved', { n: data.name }));
+});
+$('edCancel').onclick = closeEditor;
+$('edDelete').onclick = () => {
+  if (!editing) return;
+  const gone = editing;
+  state.channels = state.channels.filter((c) => c !== gone);
+  save(); closeEditor(); numberChannels();
+  if (channel && channel.id === gone.id) tune('top');
+  if (!$('guide').hidden) renderGuide();
+  toastAction(t('chDeleted', { n: gone.name }), t('undo'), () => { state.channels.push(gone); save(); numberChannels(); if (!$('guide').hidden) renderGuide(); });
+};
+
+// ---------- window, player-only mode and full screen ----------
+// in the native app (window.ipc exists) the window is frameless and the app moves it
+const inApp = !!window.ipc;
+if (inApp) document.body.classList.add('app-mode');
+const win = (msg) => inApp && window.ipc.postMessage(msg);
+for (const b of document.querySelectorAll('[data-win]')) b.onclick = () => win(b.dataset.win);
+$('bar').addEventListener('mousedown', (e) => { if (!e.target.closest('button') && e.button === 0 && e.detail === 1) win('drag'); });
+$('bar').addEventListener('dblclick', (e) => { if (!e.target.closest('button')) win('max'); });
+
+let onTop = ls.get('sakugatv.top', '0') === '1';
+function setTop(on) {
+  onTop = on; ls.set('sakugatv.top', on ? '1' : '0');
+  win(on ? 'top:on' : 'top:off');
+  for (const b of document.querySelectorAll('.pin')) { b.setAttribute('aria-pressed', String(on)); b.title = on ? t('pinOn') : t('pin'); }
+}
+for (const b of document.querySelectorAll('.pin')) b.onclick = () => { setTop(!onTop); toast(onTop ? t('pinToast') : t('pinOff')); };
+if (inApp) setTop(onTop);
+
+let fullscreen = false;
+function setMini(on) {
+  document.body.classList.toggle('mini', on);
+  $('miniBtn').setAttribute('aria-pressed', String(on));
+  if (!on && fullscreen) setTheater(false);
+  if (on) pokeHud(); else document.body.classList.remove('hud-on');
+  requestAnimationFrame(drawSheet);
+}
+function setTheater(on) {
+  fullscreen = on;
+  if (on) setMini(true);
+  if (inApp) win(on ? 'fullscreen:on' : 'fullscreen:off');
+  else if (on && !document.fullscreenElement) document.documentElement.requestFullscreen?.().catch(() => {});
+  else if (!on && document.fullscreenElement) document.exitFullscreen?.();
+  requestAnimationFrame(drawSheet);
+}
+document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && fullscreen) { fullscreen = false; requestAnimationFrame(drawSheet); } });
+$('miniBtn').onclick = () => setMini(!document.body.classList.contains('mini'));
+$('miniExit').onclick = () => setMini(false);
+$('theaterBtn').onclick = () => setTheater(!fullscreen);
+$('screen').addEventListener('dblclick', () => setTheater(!fullscreen));
+$('screen').addEventListener('mousedown', (e) => {
+  if (document.body.classList.contains('mini') && !fullscreen && e.button === 0 && e.detail === 1 && !e.target.closest('button')) win('drag');
+});
+// controls show on mouse move and fade on their own: 2 s idle over the video, 4 s idle over them
+let hudTimer, overHud = false;
+function pokeHud() {
+  document.body.classList.add('hud-on');
+  clearTimeout(hudTimer);
+  hudTimer = setTimeout(() => document.body.classList.remove('hud-on'), overHud ? 4000 : 2000);
+}
+for (const el of [$('hud'), $('miniTop')]) {
+  el.addEventListener('pointerenter', () => { overHud = true; });
+  el.addEventListener('pointerleave', () => { overHud = false; });
+}
+document.addEventListener('pointermove', () => { if (document.body.classList.contains('mini')) pokeHud(); });
+// a clicked HUD button doesn't keep focus (focus used to keep the controls on screen)
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('.hud button, .mini-top button');
+  if (b && e.detail > 0 && document.body.classList.contains('mini')) b.blur();
+});
+document.documentElement.addEventListener('pointerleave', () => {
+  if (!document.body.classList.contains('mini')) return;
+  overHud = false; clearTimeout(hudTimer);
+  hudTimer = setTimeout(() => document.body.classList.remove('hud-on'), 400);
+});
+
+// ---------- keyboard ----------
+$('prevBtn').onclick = back;
+$('nextBtn').onclick = advance;
+$('playBtn').onclick = togglePlay;
+$('favBtn').onclick = toggleFav;
+$('chUp').onclick = () => stepChannel(-1);
+$('chDown').onclick = () => stepChannel(1);
+function toggleZap() {
+  if (channel.id === ZAP_ID) return tune(state.lastPicked || 'top');
+  const scope = channel.virtual || channel.temp ? 'Todos' : channel.extra && EXTRA ? EXTRA.name : channel.group || 'Todos';
+  tune(ZAP_ID, { scope: ['Destaques', 'Meus canais'].includes(scope) ? 'Todos' : scope });
+}
+$('zapBtn').onclick = toggleZap;
+// the order applies to the open channel and is saved on it; the current clip keeps playing, the queue is rebuilt
+function toggleOrder() {
+  if (!channel || channel.virtual) return;
+  channel.order = channel.order === 'score' ? 'random' : 'score';
+  if (!channel.temp) save();
+  queue = []; exhausted = false; pages.delete(channel.id); gen++;
+  renderNowBar(); fetchMore().then(preloadNext);
+  toast(channel.order === 'score' ? t('rankToast') : t('randToast'));
+}
+$('orderBtn').onclick = toggleOrder;
+function showTab(t) {
+  $('tabNow').setAttribute('aria-selected', String(t === 'now')); $('tabQ').setAttribute('aria-selected', String(t === 'q'));
+  $('paneNow').hidden = t !== 'now'; $('paneQ').hidden = t !== 'q';
+}
+$('tabNow').onclick = () => showTab('now');
+$('tabQ').onclick = () => showTab('q');
+document.addEventListener('keydown', (e) => {
+  if ($('editor').open) return;
+  if (!$('guide').hidden) { if (e.key === 'Escape') { e.preventDefault(); closeGuide(); } return; }
+  if (e.target.closest('input, select, textarea')) return;
+  if (document.body.classList.contains('mini')) pokeHud();
+  const k = e.key.toLowerCase();
+  if (k === 'g' || e.key === '/') { e.preventDefault(); openGuide(true); }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); advance(); }
+  else if (e.key === 'ArrowLeft') { e.preventDefault(); back(); }
+  else if (e.key === 'ArrowUp' || e.key === 'PageUp') { e.preventDefault(); stepChannel(-1); }
+  else if (e.key === 'ArrowDown' || e.key === 'PageDown') { e.preventDefault(); stepChannel(1); }
+  else if (e.key === ' ') { e.preventDefault(); togglePlay(); }
+  else if (k === 'f') toggleFav();
+  else if (k === 'z') toggleZap();
+  else if (k === 'o') toggleOrder();
+  else if (k === 't' || e.key === 'F11') { e.preventDefault(); setTheater(!fullscreen); }
+  else if (k === 'p') setMini(!document.body.classList.contains('mini'));
+  else if (k === 'm') { userMuted = !active.muted; active.muted = userMuted; toast(userMuted ? t('muted') : t('unmuted')); if (!userMuted) { soundOk = true; $('soundBtn').hidden = true; } }
+  else if (e.key === 'Escape') { if (fullscreen) setTheater(false); else if (document.body.classList.contains('mini')) setMini(false); }
+});
+document.addEventListener('pointerdown', () => { if (!soundOk && current && !userMuted) { soundOk = true; active.muted = false; $('soundBtn').hidden = true; } }, { once: true });
+
+// ---------- start ----------
+(async () => {
+  const json = (u, d) => fetch(u).then((r) => (r.ok ? r.json() : d)).catch(() => d);
+  let list, local, cfg;
+  [state, list, local, cfg] = await Promise.all([fetch('/api/state').then((r) => r.json()), json('/animadores.json', []), json('/animadores.local.json', []), json('/api/config', {})]);
+  EXTRA = cfg.extraCategory || null;
+  // local profiles (not in git) override or extend the public ones
+  profiles = Object.fromEntries(list.map((p) => [p.tag, p]));
+  for (const p of local) profiles[p.tag] = { ...(profiles[p.tag] || {}), ...p };
+  applyStatic();
+  seenSet = new Set(state.seen);
+  numberChannels();
+  tune(state.lastChannel);
+})();
+</script>
+</body>
+</html>

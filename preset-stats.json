@@ -1,0 +1,794 @@
+{
+ "top": {
+  "minScore": 400,
+  "posts": 6520
+ },
+ "genga": {
+  "minScore": 50,
+  "posts": 5069
+ },
+ "genga-cmp": {
+  "minScore": 0,
+  "posts": 551
+ },
+ "efeitos": {
+  "minScore": 300,
+  "posts": 7783
+ },
+ "lutas": {
+  "minScore": 300,
+  "posts": 4854
+ },
+ "explosoes": {
+  "minScore": 200,
+  "posts": 2280
+ },
+ "fogo": {
+  "minScore": 200,
+  "posts": 2428
+ },
+ "fumaca": {
+  "minScore": 300,
+  "posts": 4735
+ },
+ "liquidos": {
+  "minScore": 200,
+  "posts": 4144
+ },
+ "destrocos": {
+  "minScore": 300,
+  "posts": 3357
+ },
+ "raios": {
+  "minScore": 150,
+  "posts": 2975
+ },
+ "feixes": {
+  "minScore": 150,
+  "posts": 1613
+ },
+ "impacto": {
+  "minScore": 200,
+  "posts": 2902
+ },
+ "smears": {
+  "minScore": 300,
+  "posts": 5303
+ },
+ "itano": {
+  "minScore": 50,
+  "posts": 367
+ },
+ "mecha": {
+  "minScore": 150,
+  "posts": 1116
+ },
+ "criaturas": {
+  "minScore": 200,
+  "posts": 3533
+ },
+ "cabelo": {
+  "minScore": 150,
+  "posts": 2615
+ },
+ "corrida": {
+  "minScore": 150,
+  "posts": 3774
+ },
+ "atuacao": {
+  "minScore": 300,
+  "posts": 3844
+ },
+ "choro": {
+  "minScore": 50,
+  "posts": 1405
+ },
+ "danca": {
+  "minScore": 50,
+  "posts": 1636
+ },
+ "esporte": {
+  "minScore": 50,
+  "posts": 1474
+ },
+ "comida": {
+  "minScore": 30,
+  "posts": 1339
+ },
+ "cenario": {
+  "minScore": 200,
+  "posts": 3653
+ },
+ "rotacao": {
+  "minScore": 100,
+  "posts": 1590
+ },
+ "henshin": {
+  "minScore": 30,
+  "posts": 1089
+ },
+ "morphing": {
+  "minScore": 100,
+  "posts": 1115
+ },
+ "kanada": {
+  "minScore": 0,
+  "posts": 671
+ },
+ "yutapon": {
+  "minScore": 100,
+  "posts": 316
+ },
+ "matsumoto": {
+  "minScore": 50,
+  "posts": 515
+ },
+ "iso": {
+  "minScore": 0,
+  "posts": 226
+ },
+ "ohira": {
+  "minScore": 0,
+  "posts": 352
+ },
+ "inoue": {
+  "minScore": 30,
+  "posts": 502
+ },
+ "yoshinari": {
+  "minScore": 30,
+  "posts": 439
+ },
+ "imaishi": {
+  "minScore": 0,
+  "posts": 329
+ },
+ "kameda": {
+  "minScore": 0,
+  "posts": 258
+ },
+ "bahi": {
+  "minScore": 0,
+  "posts": 173
+ },
+ "hayashi": {
+  "minScore": 0,
+  "posts": 310
+ },
+ "hashimoto": {
+  "minScore": 0,
+  "posts": 431
+ },
+ "iwane": {
+  "minScore": 30,
+  "posts": 534
+ },
+ "miyazaki": {
+  "minScore": 0,
+  "posts": 290
+ },
+ "mob": {
+  "minScore": 100,
+  "posts": 377
+ },
+ "jjk": {
+  "minScore": 100,
+  "posts": 1253
+ },
+ "csm": {
+  "minScore": 50,
+  "posts": 527
+ },
+ "frieren": {
+  "minScore": 50,
+  "posts": 582
+ },
+ "dandadan": {
+  "minScore": 50,
+  "posts": 375
+ },
+ "kny": {
+  "minScore": 50,
+  "posts": 505
+ },
+ "mha": {
+  "minScore": 100,
+  "posts": 1263
+ },
+ "firef": {
+  "minScore": 50,
+  "posts": 478
+ },
+ "jojo": {
+  "minScore": 30,
+  "posts": 509
+ },
+ "naruto": {
+  "minScore": 100,
+  "posts": 1513
+ },
+ "dbz": {
+  "minScore": 50,
+  "posts": 1017
+ },
+ "eva": {
+  "minScore": 50,
+  "posts": 594
+ },
+ "aot": {
+  "minScore": 50,
+  "posts": 646
+ },
+ "gundam": {
+  "minScore": 50,
+  "posts": 809
+ },
+ "precure": {
+  "minScore": 50,
+  "posts": 1003
+ },
+ "kll": {
+  "minScore": 0,
+  "posts": 216
+ },
+ "kkk": {
+  "minScore": 0,
+  "posts": 177
+ },
+ "ass-flare": {
+  "minScore": 50,
+  "posts": 749
+ },
+ "ass-kutsuna": {
+  "minScore": 30,
+  "posts": 356
+ },
+ "ass-wakame": {
+  "minScore": 0,
+  "posts": 315
+ },
+ "ass-umakoshi": {
+  "minScore": 0,
+  "posts": 210
+ },
+ "ass-cubes": {
+  "minScore": 0,
+  "posts": 199
+ },
+ "ass-dragon": {
+  "minScore": 0,
+  "posts": 167
+ },
+ "ass-obari": {
+  "minScore": 0,
+  "posts": 136
+ },
+ "ass-ebata": {
+  "minScore": 0,
+  "posts": 42
+ },
+ "cena-walk": {
+  "minScore": 50,
+  "posts": 2579
+ },
+ "cena-crowd": {
+  "minScore": 50,
+  "posts": 1324
+ },
+ "cena-vehicle": {
+  "minScore": 150,
+  "posts": 981
+ },
+ "cena-animals": {
+  "minScore": 150,
+  "posts": 1081
+ },
+ "cena-flying": {
+  "minScore": 100,
+  "posts": 1109
+ },
+ "cena-falling": {
+  "minScore": 100,
+  "posts": 932
+ },
+ "cena-ice": {
+  "minScore": 50,
+  "posts": 751
+ },
+ "cena-wind": {
+  "minScore": 200,
+  "posts": 3481
+ },
+ "cena-sparks": {
+  "minScore": 200,
+  "posts": 2532
+ },
+ "cena-instr": {
+  "minScore": 20,
+  "posts": 520
+ },
+ "cena-op": {
+  "minScore": 0,
+  "posts": 381
+ },
+ "cena-roto": {
+  "minScore": 20,
+  "posts": 609
+ },
+ "cena-pb": {
+  "minScore": 30,
+  "posts": 860
+ },
+ "cena-stop": {
+  "minScore": 0,
+  "posts": 30
+ },
+ "cena-3dbg": {
+  "minScore": 50,
+  "posts": 2944
+ },
+ "cena-web": {
+  "minScore": 100,
+  "posts": 1156
+ },
+ "cena-gattai": {
+  "minScore": 0,
+  "posts": 393
+ },
+ "cena-henkei": {
+  "minScore": 0,
+  "posts": 482
+ },
+ "bst-story": {
+  "minScore": 0,
+  "posts": 1697
+ },
+ "bst-layout": {
+  "minScore": 20,
+  "posts": 2794
+ },
+ "bst-rough": {
+  "minScore": 0,
+  "posts": 199
+ },
+ "bst-douga": {
+  "minScore": 0,
+  "posts": 414
+ },
+ "oc-western": {
+  "minScore": 200,
+  "posts": 473
+ },
+ "oc-kahl": {
+  "minScore": 0,
+  "posts": 351
+ },
+ "oc-thomas": {
+  "minScore": 0,
+  "posts": 195
+ },
+ "oc-johnston": {
+  "minScore": 0,
+  "posts": 227
+ },
+ "oc-larson": {
+  "minScore": 0,
+  "posts": 171
+ },
+ "oc-natwick": {
+  "minScore": 0,
+  "posts": 228
+ },
+ "oc-castle": {
+  "minScore": 50,
+  "posts": 383
+ },
+ "oc-arcane": {
+  "minScore": 0,
+  "posts": 44
+ },
+ "oc-spider": {
+  "minScore": 0,
+  "posts": 114
+ },
+ "oc-chansard": {
+  "minScore": 0,
+  "posts": 216
+ },
+ "mv-eve": {
+  "minScore": 0,
+  "posts": 366
+ },
+ "mv-zutomayo": {
+  "minScore": 0,
+  "posts": 110
+ },
+ "mv-yoasobi": {
+  "minScore": 0,
+  "posts": 60
+ },
+ "a-tanaka": {
+  "minScore": 0,
+  "posts": 927
+ },
+ "a-sato": {
+  "minScore": 0,
+  "posts": 616
+ },
+ "a-shida": {
+  "minScore": 0,
+  "posts": 530
+ },
+ "a-ryotanaka": {
+  "minScore": 0,
+  "posts": 553
+ },
+ "a-okubo": {
+  "minScore": 0,
+  "posts": 547
+ },
+ "a-abe": {
+  "minScore": 0,
+  "posts": 473
+ },
+ "a-takeuchi": {
+  "minScore": 0,
+  "posts": 503
+ },
+ "a-yoshihara": {
+  "minScore": 0,
+  "posts": 386
+ },
+ "a-honda": {
+  "minScore": 0,
+  "posts": 332
+ },
+ "a-kanno": {
+  "minScore": 0,
+  "posts": 329
+ },
+ "a-kou": {
+  "minScore": 0,
+  "posts": 293
+ },
+ "a-sushio": {
+  "minScore": 0,
+  "posts": 278
+ },
+ "a-kakita": {
+  "minScore": 0,
+  "posts": 260
+ },
+ "a-obari": {
+  "minScore": 0,
+  "posts": 245
+ },
+ "a-kozuma": {
+  "minScore": 0,
+  "posts": 271
+ },
+ "a-amemiya": {
+  "minScore": 0,
+  "posts": 192
+ },
+ "a-imai": {
+  "minScore": 0,
+  "posts": 176
+ },
+ "a-oshiyama": {
+  "minScore": 0,
+  "posts": 205
+ },
+ "a-okiura": {
+  "minScore": 0,
+  "posts": 220
+ },
+ "a-kondo": {
+  "minScore": 0,
+  "posts": 191
+ },
+ "a-park": {
+  "minScore": 0,
+  "posts": 225
+ },
+ "a-tu": {
+  "minScore": 0,
+  "posts": 212
+ },
+ "a-kise": {
+  "minScore": 0,
+  "posts": 218
+ },
+ "a-umetsu": {
+  "minScore": 0,
+  "posts": 170
+ },
+ "a-kiso": {
+  "minScore": 0,
+  "posts": 193
+ },
+ "a-takase": {
+  "minScore": 0,
+  "posts": 266
+ },
+ "pokemon": {
+  "minScore": 100,
+  "posts": 410
+ },
+ "fate": {
+  "minScore": 50,
+  "posts": 1513
+ },
+ "bleach": {
+  "minScore": 50,
+  "posts": 793
+ },
+ "lupin": {
+  "minScore": 30,
+  "posts": 457
+ },
+ "imas": {
+  "minScore": 20,
+  "posts": 657
+ },
+ "digimon": {
+  "minScore": 20,
+  "posts": 681
+ },
+ "fma": {
+  "minScore": 30,
+  "posts": 665
+ },
+ "yugioh": {
+  "minScore": 20,
+  "posts": 393
+ },
+ "gintama": {
+  "minScore": 20,
+  "posts": 790
+ },
+ "blackclover": {
+  "minScore": 50,
+  "posts": 687
+ },
+ "sailormoon": {
+  "minScore": 20,
+  "posts": 490
+ },
+ "nanoha": {
+  "minScore": 0,
+  "posts": 526
+ },
+ "symphogear": {
+  "minScore": 20,
+  "posts": 447
+ },
+ "sao": {
+  "minScore": 50,
+  "posts": 513
+ },
+ "gits": {
+  "minScore": 20,
+  "posts": 490
+ },
+ "ranma": {
+  "minScore": 20,
+  "posts": 370
+ },
+ "urusei": {
+  "minScore": 20,
+  "posts": 452
+ },
+ "toaru": {
+  "minScore": 30,
+  "posts": 322
+ },
+ "eureka": {
+  "minScore": 20,
+  "posts": 373
+ },
+ "haikyuu": {
+  "minScore": 30,
+  "posts": 408
+ },
+ "ttgl": {
+  "minScore": 50,
+  "posts": 467
+ },
+ "macross": {
+  "minScore": 0,
+  "posts": 487
+ },
+ "monogatari": {
+  "minScore": 20,
+  "posts": 484
+ },
+ "madoka": {
+  "minScore": 0,
+  "posts": 497
+ },
+ "lovelive": {
+  "minScore": 0,
+  "posts": 460
+ },
+ "eupho": {
+  "minScore": 20,
+  "posts": 360
+ },
+ "ranking": {
+  "minScore": 30,
+  "posts": 388
+ },
+ "geass": {
+  "minScore": 0,
+  "posts": 384
+ },
+ "umamusume": {
+  "minScore": 30,
+  "posts": 368
+ },
+ "sololeveling": {
+  "minScore": 0,
+  "posts": 345
+ },
+ "kon": {
+  "minScore": 0,
+  "posts": 303
+ },
+ "yyh": {
+  "minScore": 0,
+  "posts": 248
+ },
+ "inuyasha": {
+  "minScore": 0,
+  "posts": 349
+ },
+ "dunmeshi": {
+  "minScore": 30,
+  "posts": 334
+ },
+ "lwa": {
+  "minScore": 0,
+  "posts": 318
+ },
+ "flcl": {
+  "minScore": 30,
+  "posts": 303
+ },
+ "cyborg009": {
+  "minScore": 0,
+  "posts": 284
+ },
+ "dandy": {
+  "minScore": 30,
+  "posts": 346
+ },
+ "seiya": {
+  "minScore": 0,
+  "posts": 392
+ },
+ "mushoku": {
+  "minScore": 30,
+  "posts": 343
+ },
+ "rezero": {
+  "minScore": 30,
+  "posts": 307
+ },
+ "danmachi": {
+  "minScore": 0,
+  "posts": 352
+ },
+ "doraemon": {
+  "minScore": 20,
+  "posts": 344
+ },
+ "shinchan": {
+  "minScore": 20,
+  "posts": 311
+ },
+ "conan": {
+  "minScore": 20,
+  "posts": 381
+ },
+ "magi": {
+  "minScore": 0,
+  "posts": 279
+ },
+ "a-imamura": {
+  "minScore": 0,
+  "posts": 189
+ },
+ "cx-danca-roupa": {
+  "minScore": 0,
+  "posts": 315
+ },
+ "cx-idols": {
+  "minScore": 0,
+  "posts": 430
+ },
+ "cx-magical": {
+  "minScore": 0,
+  "posts": 353
+ },
+ "cx-luta-smear": {
+  "minScore": 300,
+  "posts": 3504
+ },
+ "cx-impacto": {
+  "minScore": 200,
+  "posts": 1511
+ },
+ "cx-fogo-exp": {
+  "minScore": 200,
+  "posts": 709
+ },
+ "cx-corrida-cabelo": {
+  "minScore": 100,
+  "posts": 1385
+ },
+ "cx-mecha-feixe": {
+  "minScore": 100,
+  "posts": 333
+ },
+ "cx-luta-ar": {
+  "minScore": 100,
+  "posts": 505
+ },
+ "cx-kanada-exp": {
+  "minScore": 0,
+  "posts": 202
+ },
+ "cx-yutapon-luta": {
+  "minScore": 0,
+  "posts": 159
+ },
+ "cx-web-luta": {
+  "minScore": 50,
+  "posts": 586
+ },
+ "cx-bichos": {
+  "minScore": 50,
+  "posts": 592
+ },
+ "cx-choro": {
+  "minScore": 50,
+  "posts": 1236
+ },
+ "cx-comida": {
+  "minScore": 30,
+  "posts": 1102
+ },
+ "cx-liq-fumaca": {
+  "minScore": 300,
+  "posts": 1320
+ },
+ "cx-pancadaria": {
+  "minScore": 300,
+  "posts": 1995
+ },
+ "cx-obari-luta": {
+  "minScore": 0,
+  "posts": 51
+ },
+ "cx-vento-cabelo": {
+  "minScore": 100,
+  "posts": 1363
+ },
+ "cx-vento-roupa": {
+  "minScore": 100,
+  "posts": 1312
+ },
+ "cx-esporte": {
+  "minScore": 30,
+  "posts": 406
+ },
+ "cx-perseguicao": {
+  "minScore": 100,
+  "posts": 417
+ },
+ "cx-queda": {
+  "minScore": 50,
+  "posts": 398
+ }
+}
