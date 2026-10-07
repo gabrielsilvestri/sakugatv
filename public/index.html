@@ -877,6 +877,7 @@ function play(post) {
   renderQueue();
   if (queue.length < 5 && !exhausted) fetchMore();
   preloadNext();
+  syncAspect();
 }
 function preloadNext() {
   const next = queue[0];
@@ -1009,6 +1010,7 @@ function unblockTag(tg) {
 // ---------- video ----------
 for (const v of [$('vA'), $('vB')]) {
   v.addEventListener('ended', () => { if (v === active) advance(); });
+  v.addEventListener('loadedmetadata', () => { if (v === active) syncAspect(); });
   v.addEventListener('timeupdate', () => { if (v === active) drawSheet(); });
   v.addEventListener('error', () => { if (v === active && current) { toast(t('clipFail')); advance(); } });
 }
@@ -1353,19 +1355,29 @@ for (const b of document.querySelectorAll('.pin')) b.onclick = () => { setTop(!o
 if (inApp) setTop(onTop);
 
 let fullscreen = false;
+// player-only in the native app: the window takes the clip's aspect ratio, so there are never black bars
+let sentAspect = '';
+function syncAspect() {
+  if (!inApp) return;
+  const on = document.body.classList.contains('mini') && !fullscreen && active.videoWidth > 0;
+  const msg = on ? `aspect:${(active.videoWidth / active.videoHeight).toFixed(4)}` : 'aspect:off';
+  if (msg !== sentAspect) { sentAspect = msg; win(msg); }
+}
 function setMini(on) {
   document.body.classList.toggle('mini', on);
   $('miniBtn').setAttribute('aria-pressed', String(on));
   if (!on && fullscreen) setTheater(false);
   if (on) pokeHud(); else document.body.classList.remove('hud-on');
+  syncAspect();
   requestAnimationFrame(drawSheet);
 }
 function setTheater(on) {
   fullscreen = on;
   if (on) setMini(true);
-  if (inApp) win(on ? 'fullscreen:on' : 'fullscreen:off');
+  if (inApp) { if (on) { sentAspect = 'aspect:off'; win('aspect:off'); } win(on ? 'fullscreen:on' : 'fullscreen:off'); }
   else if (on && !document.fullscreenElement) document.documentElement.requestFullscreen?.().catch(() => {});
   else if (!on && document.fullscreenElement) document.exitFullscreen?.();
+  if (!on) setTimeout(syncAspect, 150);
   requestAnimationFrame(drawSheet);
 }
 document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && fullscreen) { fullscreen = false; requestAnimationFrame(drawSheet); } });

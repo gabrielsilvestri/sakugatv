@@ -8,7 +8,7 @@ use std::path::PathBuf;
 use std::process::{Child, Command};
 use std::time::{Duration, Instant};
 
-use tao::dpi::LogicalSize;
+use tao::dpi::{LogicalSize, PhysicalSize};
 use tao::event::{Event, WindowEvent};
 use tao::event_loop::{ControlFlow, EventLoopBuilder};
 use tao::platform::windows::WindowBuilderExtWindows;
@@ -82,6 +82,7 @@ enum UserEvent {
     ToggleMaximize,
     Close,
     OnTop(bool),
+    Aspect(Option<f64>),
 }
 
 fn main() -> wry::Result<()> {
@@ -135,6 +136,11 @@ fn main() -> wry::Result<()> {
                 "close" => UserEvent::Close,
                 "top:on" => UserEvent::OnTop(true),
                 "top:off" => UserEvent::OnTop(false),
+                "aspect:off" => UserEvent::Aspect(None),
+                a if a.starts_with("aspect:") => match a[7..].parse::<f64>() {
+                    Ok(r) if r > 0.2 && r < 5.0 => UserEvent::Aspect(Some(r)),
+                    _ => return,
+                },
                 _ => return,
             };
             let _ = proxy.send_event(ev);
@@ -145,6 +151,21 @@ fn main() -> wry::Result<()> {
             NewWindowResponse::Deny
         })
         .build(&window)?;
+
+    // player-only mode locks the window to the clip's aspect ratio (no black bars)
+    let mut aspect: Option<f64> = None;
+    let mut last = window.inner_size();
+    let fit = |window: &tao::window::Window, r: f64, prefer_width: bool| {
+        let s = window.inner_size();
+        let target = if prefer_width {
+            PhysicalSize::new(s.width, (s.width as f64 / r).round() as u32)
+        } else {
+            PhysicalSize::new((s.height as f64 * r).round() as u32, s.height)
+        };
+        if (target.width as i64 - s.width as i64).abs() > 1 || (target.height as i64 - s.height as i64).abs() > 1 {
+            window.set_inner_size(target);
+        }
+    };
 
     event_loop.run(move |event, _, control_flow| {
         *control_flow = ControlFlow::Wait;
@@ -158,6 +179,39 @@ fn main() -> wry::Result<()> {
             }
             Event::UserEvent(UserEvent::Minimize) => window.set_minimized(true),
             Event::UserEvent(UserEvent::OnTop(on)) => window.set_always_on_top(on),
+            Event::UserEvent(UserEvent::Aspect(r)) => {
+                aspect = r;
+                match r {
+                    Some(r) => {
+                        window.set_min_inner_size(Some(LogicalSize::new(320.0, 320.0 / r)));
+                        if window.is_maximized() {
+                            window.set_maximized(false);
+                        }
+                        fit(&window, r, true);
+                    }
+                    None => {
+                        window.set_min_inner_size(Some(LogicalSize::new(720.0, 480.0)));
+                        // back from a tiny player-only window: grow to the normal minimum
+                        let scale = window.scale_factor();
+                        let cur = window.inner_size().to_logical::<f64>(scale);
+                        if cur.width < 720.0 || cur.height < 480.0 {
+                            window.set_inner_size(LogicalSize::new(cur.width.max(720.0), cur.height.max(480.0)));
+                        }
+                    }
+                }
+                last = window.inner_size();
+            }
+            Event::WindowEvent { event: WindowEvent::Resized(size), .. } => {
+                if let Some(r) = aspect {
+                    if window.fullscreen().is_none() && !window.is_maximized() {
+                        // keep the side the user dragged, adjust the other one
+                        let dw = (size.width as i64 - last.width as i64).abs();
+                        let dh = (size.height as i64 - last.height as i64).abs();
+                        fit(&window, r, dw >= dh);
+                    }
+                }
+                last = window.inner_size();
+            }
             Event::UserEvent(UserEvent::ToggleMaximize) => window.set_maximized(!window.is_maximized()),
             Event::UserEvent(UserEvent::Close) | Event::WindowEvent { event: WindowEvent::CloseRequested, .. } => {
                 if let Some(child) = server.as_mut() {
